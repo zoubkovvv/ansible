@@ -1,0 +1,24 @@
+---
+
+- hosts: ubuntu
+  become: true
+
+
+  tasks:
+    - name: Install all packages
+      apt:
+        name: 
+          - atop
+          - nmap
+        state: present
+        update_cache: True
+
+- hosts: oracle
+  become: true
+
+  tasks:
+    - name: Install all packages
+      dnf:
+        name: ['atop', 'iotop', 'nmap', 'tcpdump', 'fping', 'curl', 'wget', 'vim', 'chrony', 'net-tools', 'unzip', 'bash-completion', 'iptraf-ng', 'bmon', 'iftop', 'hping3', 'pssh', 'tmux'] 
+        state: present
+        update_cache: True

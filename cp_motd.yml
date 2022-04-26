@@ -1,0 +1,12 @@
+---
+
+- hosts: all
+  become: true
+
+
+  tasks:
+
+    - name: copy SSH motd
+      copy:
+        src: motd 
+        dest: /etc/motd

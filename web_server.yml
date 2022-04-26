@@ -1,0 +1,42 @@
+---
+
+- hosts: oracle
+  become: true
+
+  tasks:
+
+    - name: Install httpd server
+      yum: 
+        name: httpd
+
+    - name: Start the httpd services
+      service:
+        name: httpd
+        state: started
+        enabled: true
+
+- hosts: ubuntu
+  become: true
+
+  tasks:
+
+    - name: Install apache2 server
+      apt: 
+        name: apache2
+
+    - name: Start the apache2 services 
+      service:
+        name: apache2
+        state: started
+        enabled: true
+
+- hosts: all
+  become: true
+
+  tasks:
+
+    - name: Copy index.html
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+
