@@ -1,0 +1,21 @@
+---
+
+- hosts: ubuntu
+  become: true
+
+  tasks:
+    - name: Update all packages
+      apt:
+        name: "*"
+        state: latest
+        update_cache: True
+
+- hosts: oracle
+  become: true
+
+  tasks:
+    - name: Update all packages
+      dnf:
+        name: "*"
+        state: latest
+        update_cache: True
