@@ -15,8 +15,6 @@
         state: started
         enabled: true
 
-  tasks:
-
     - name: Copy index.html
       copy:
         src: index.html
