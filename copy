@@ -1,0 +1,21 @@
+#!/bin/bash
+echo "Enter a file you want to copy:"
+read name1
+echo "Enter a new file name:"
+read name2
+if [ ! -f $name1 ]; then
+	echo "The file doesn't exist!"
+else
+	echo "Starting copying..."
+	myvar=1
+	while [ $myvar -lt 5 ]
+	do
+		sleep 1
+		echo -n "."
+		((myvar++))
+	done
+	cp $name1 $name2
+	echo "."
+	echo "The file $name1 has been copied to $name2"
+fi
+
