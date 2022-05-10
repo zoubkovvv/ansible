@@ -1,0 +1,7 @@
+#!/bin/bash
+turtles='Donatello Leonardo Michelangelo Raphael'
+echo $turtles
+for t in $turtles
+do
+echo $t
+done

@@ -1,0 +1,10 @@
+#!/bin/bash
+CURDATE=$(date +%d-%m-%Y)
+echo $CURDATE
+if [ ! -f /usr/bin/rsync ]; then
+	echo "Installing rsync."
+	sudo apt install -y rsync
+else
+echo "rsync already installed."
+fi
+rsync -avb --delete --backup-dir=~/backup/incremental/$CURDATE /home/zoubkovvv/mastering_ubuntu_server ~/backup
