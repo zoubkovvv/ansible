@@ -28,8 +28,7 @@
 
   - name: Install nginx package
     yum:
-      name:
-        - nginx
+      name: nginx
       state: latest
  
   - name: Enable and start nginx service
