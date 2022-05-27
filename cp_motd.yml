@@ -1,12 +1,10 @@
 ---
-
-- hosts: all
+- name: Copy motd message on Linux servers
+  hosts: all
   become: true
 
-
   tasks:
-
-    - name: copy SSH motd
+    - name: Copy motd message
       copy:
         src: motd 
         dest: /etc/motd

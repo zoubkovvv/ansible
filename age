@@ -6,4 +6,7 @@ if [ $age -lt 30 ]; then
 else
 	echo "You're old!"
 fi
-
+echo "Enter your name:"
+read name
+echo "Your name is $name!"
+echo "Nice to meet you $name"

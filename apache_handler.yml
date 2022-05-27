@@ -1,0 +1,35 @@
+---
+- name: "Install and enable Apache Web Server on RHEL-like servers"
+  hosts: oracle
+  become: yes
+
+  vars:
+    source_file: ./mysite/index.html
+    dest_file: /var/www/html 
+
+  tasks:
+    - name: "Installing httpd on Oracle Linux"
+      yum: 
+        name: httpd
+        state: latest
+
+    - name: "Copying web server files on Oracle Linux"
+      copy: 
+        src: "{{ source_file }}"
+        dest: "{{ dest_file }}"
+        mode: 0640
+        owner: apache
+        group: apache
+      notify: Restarting httpd on Oracle Linux
+
+    - name: "Starting and enabling httpd on Oracle Linux"
+      service: 
+        name: httpd
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: "Restarting httpd on Oracle Linux"
+      service: 
+        name: httpd
+        state: restarted

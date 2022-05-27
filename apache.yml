@@ -1,0 +1,18 @@
+---
+- name: "Install Apache Web Servers on RHEL-like Servers"
+  hosts: oracle
+  become: true
+
+  tasks:
+    - name: "Install Apache Web Servers (httpd)"
+      yum: 
+        name: httpd
+        state: latest
+
+    - name: "Start Apache Web Servers (httpd)"
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+

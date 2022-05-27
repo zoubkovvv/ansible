@@ -1,0 +1,47 @@
+---
+- name: Test tasks
+  become: yes
+  hosts: all
+
+  tasks:
+  - name: Remove java 8 version
+    yum:
+      name:
+        - java-1.8.0-openjdk
+        - java-1.8.0-openjdk-headless
+      update_cache: yes
+      state: absent
+  
+  - name: Download and unarchive a new java 17
+    unarchive:
+      src: https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
+      dest: /opt/
+      owner: root
+      group: root
+      remote_src: yes
+      list_files: yes
+
+  - name: Add to PATH
+    copy:
+      content: "export PATH=$PATH:/opt/jdk-17.0.2/bin"
+      dest: "/etc/profile.d/java.sh"
+
+  - name: Install nginx package
+    yum:
+      name:
+        - nginx
+      state: latest
+ 
+  - name: Enable and start nginx service
+    service:
+      name: nginx
+      enabled: yes
+      state: started
+ 
+  - name: Copy index.html from template folder on remote servers
+    template:
+      src: template/index.html.j2
+      dest: /usr/share/nginx/html/index.html
+      mode: 0644
+      owner: nginx
+      group: nginx

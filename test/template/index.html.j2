@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Ansible example</title>
+   </head>
+   <body>
+	   <center>
+		   The hostname of this webserver is <b> <p style="color:red"> {{ ansible_hostname }} </p> </b> and has <b> <p style="color:red"> {{ ansible_default_ipv4.address }} </p> </b> <br>
+   It is running on <b> <p style="color:red"> {{ ansible_os_family }} </p> </b> system.
+   </body>
+</html>

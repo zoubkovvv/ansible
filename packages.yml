@@ -1,8 +1,7 @@
 ---
-
-- hosts: ubuntu
-  become: true
-
+- name: "Install different useful packages"
+  hosts: all
+  become: yes
 
   tasks:
     - name: Install all packages
@@ -12,9 +11,6 @@
           - nmap
         state: present
         update_cache: True
-
-- hosts: oracle
-  become: true
 
   tasks:
     - name: Install all packages

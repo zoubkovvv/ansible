@@ -1,10 +1,9 @@
 ---
-
-- hosts: localhost
+- name: Install apache2 server on localhost
+  hosts: localhost
   become: true
 
   tasks:
-
     - name: Install apache2 server
       apt: 
         name: apache2

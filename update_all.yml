@@ -1,10 +1,11 @@
 ---
+- name: Update all packeges on Linux servers
 
 - hosts: ubuntu
   become: true
 
   tasks:
-    - name: Update all packages
+    - name: Update all packages on Ubuntu servers
       apt:
         name: "*"
         state: latest
@@ -14,7 +15,7 @@
   become: true
 
   tasks:
-    - name: Update all packages
+    - name: Update all packages RHEL-like servers
       dnf:
         name: "*"
         state: latest
