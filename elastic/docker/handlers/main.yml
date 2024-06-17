@@ -1,8 +1,0 @@
----
-# handlers file for docker
-- name: Restart docker
-  ansible.builtin.service:
-    name: docker
-    state: restarted
-    enabled: True
-
