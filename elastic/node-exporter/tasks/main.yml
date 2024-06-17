@@ -1,0 +1,45 @@
+---
+# tasks file for node-exporter
+- name: Print startup messages
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop:
+    - "{{ initial_message }}"
+    - "{{ startup_message }}"
+  tags:
+    - "{{ app }}"
+       
+- name: Create directory with permissions 0777
+  ansible.builtin.file:
+    path: "{{ docker_directory }}"
+    state: directory
+    mode: '0777'
+  tags:
+    - node-exporter
+
+- name: Template configuration files
+  ansible.builtin.template:
+    src: "templates/{{ docker_compose }}.j2"
+    dest: "{{ docker_directory }}/{{ docker_compose }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Docker Services
+  tags:
+    - node-exporter
+
+- name: Create and start services using Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    files:
+    - "{{ docker_compose }}"
+  register: output
+  tags:
+    - node-exporter
+
+- name: Debug output
+  ansible.builtin.debug:
+    var: output
+  tags:
+    - node-exporter
+

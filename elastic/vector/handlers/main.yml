@@ -1,0 +1,6 @@
+---
+# handlers file for docker
+- name: Restart Docker Services
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    state: restarted
