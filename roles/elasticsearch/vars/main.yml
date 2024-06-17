@@ -1,0 +1,10 @@
+---
+# vars file for elastic
+docker_compose: "docker-compose.yaml"
+docker_app: "{{ app }}"
+docker_directory: "/opt/{{ app }}"
+docker_image: bitnami/elasticsearch:7.17.21 
+docker_mem_limit: 1500m
+docker_log_size: "200k"
+docker_log_file: "10"
+

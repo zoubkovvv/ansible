@@ -1,0 +1,111 @@
+services:
+  elasticsearch:
+    image: {{ docker_image }}
+    container_name: {{ docker_app }}
+    environment:
+      - node.name=elasticsearch-node
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+#      - ingest.geoip.downloader.enabled=false
+    networks:
+      - {{ docker_app }}
+    ports:
+      - "9200:9200"
+    volumes:
+      - {{ docker_directory }}/data:/bitnami/elasticsearch/data
+      - {{ docker_directory }}/logs:/opt/bitnami/elasticsearch/logs
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: always
+    mem_limit: 1600m
+    oom_score_adj: -800
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://elasticsearch:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: {{ docker_log_size }}
+        max-file: {{ docker_log_file }}
+
+  elasticsearch-exporter:
+    image: bitnami/elasticsearch-exporter
+    container_name: elasticsearch-exporter
+    mem_limit: 256m
+    networks:
+      - {{ docker_app }}
+    ports:
+      - "9114:9114"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: always
+    command:
+      - '--es.uri=http://elasticsearch:9200'
+      - '--es.ssl-skip-verify'
+      - '--es.all'
+      - '--es.indices'
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl -f http://localhost:9114/metrics || exit 1"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: {{ docker_log_size }}
+        max-file: {{ docker_log_file }}
+
+  kibana:
+    container_name: kibana
+    image:  bitnami/kibana:7.17.21
+    restart: always
+    depends_on:
+      - elasticsearch
+    volumes:
+      - /opt/elasticsearch/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,Z
+    ports:
+      - "8080:5601"
+    mem_limit: 512m
+    networks:
+      - {{ docker_app }}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: {{ docker_log_size }}
+        max-file: {{ docker_log_file }}
+
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    restart: always
+    mem_limit: 256m
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    command: "--store_container_labels=false"
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    ports:
+      - '9010:8080'
+    privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: {{ docker_log_size }}
+        max-file: {{ docker_log_file }}
+
+networks:
+  {{ docker_app }}:
+    driver: bridge

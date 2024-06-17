@@ -1,0 +1,81 @@
+---
+# tasks file for docker
+- name: Print tags of tasks
+  ansible.builtin.debug:
+    msg: "Tags of this task: {{ app }}"
+
+- name: Print startup messages
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop:
+    - "{{ initial_message }}"
+    - "{{ startup_message }}"
+  tags:
+    - "{{ app }}"
+
+- name: Uninstall old packages
+  ansible.builtin.apt:
+    name: "{{ docker_old_packages }}"
+    state: absent
+  tags:
+    - docker
+
+- name: Create directory "{{ keyrings_folder }}" with permissions 0755
+  ansible.builtin.file:
+    path: "{{ keyrings_folder }}"
+    state: directory
+    mode: '0755'
+  tags:
+    - docker
+
+- name: Download Docker repository signing key
+  ansible.builtin.get_url:
+    url: "{{ docker_url }}/gpg"
+    dest: "{{ keyrings_folder }}/docker.asc"
+  tags:
+    - docker
+
+- name: Print architecture variables
+  ansible.builtin.debug:
+    msg: "Architecture: {{ ansible_architecture }}, Codename: {{ ansible_lsb.codename }}"
+  tags:
+    - docker
+
+- name: Add docker repository to apt
+  ansible.builtin.apt_repository:
+    repo: deb [arch={{ arch_mapping[ansible_architecture] }} signed-by={{ keyrings_folder }}/docker.asc] {{ docker_url }} {{ ansible_lsb.codename }} stable
+    state: present
+    update_cache: True
+  tags:
+    - docker
+
+- name: Install Docker packages
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+  notify: Restart docker
+  tags:
+    - docker
+
+- name: Check docker is active
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: True
+  tags:
+    - docker
+
+- name: Ensure group "docker" exists
+  ansible.builtin.group:
+    name: docker
+    state: present
+  tags:
+    - docker
+
+- name: Add user to Docker group
+  ansible.builtin.user:
+    name: "{{ docker_user }}"
+    groups: docker
+    append: True
+  tags:
+    - docker
+
