@@ -9,4 +9,3 @@ docker_image: "timberio/vector:0.38.0-debian"
 docker_mem_limit: "500m"
 docker_log_size: "200k"
 docker_log_file: "10"
-

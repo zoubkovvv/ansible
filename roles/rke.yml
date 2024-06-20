@@ -1,15 +1,15 @@
 ---
 # playbook.yml
 - name: Playbook for running different roles
-  hosts: all
+  hosts: rancher
   become: true
   vars:
     roles_to_run:
       initial: true
-      docker: true
-      node-exporter: true
-      elasticsearch: true
-      vector: true
+      docker: false
+      node-exporter: false
+      elasticsearch: false
+      vector: false
 
   tasks:
     - name: Include roles based on conditions

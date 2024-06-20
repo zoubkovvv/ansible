@@ -8,7 +8,7 @@
     - "{{ startup_message }}"
   tags:
     - vector
-    
+
 - name: Create directory with permissions 0777
   ansible.builtin.file:
     path: "{{ docker_directory }}"
@@ -30,7 +30,7 @@
 
 - name: Copy configuration files
   ansible.builtin.copy:
-    src: "files/vector.yaml" 
+    src: "files/vector.yaml"
     dest: "{{ docker_directory }}/vector.yaml"
     owner: root
     group: root
@@ -43,7 +43,7 @@
   community.docker.docker_compose_v2:
     project_src: "{{ docker_directory }}"
     files:
-    - "{{ docker_compose }}"
+      - "{{ docker_compose }}"
   register: output
   tags:
     - "{{ app }}"
@@ -53,4 +53,3 @@
     var: output
   tags:
     - "{{ app }}"
-

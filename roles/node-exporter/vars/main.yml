@@ -7,4 +7,3 @@ docker_image: "prom/{{ app }}:v1.8.1"
 docker_mem_limit: 200m
 docker_log_size: "200k"
 docker_log_file: "10"
-

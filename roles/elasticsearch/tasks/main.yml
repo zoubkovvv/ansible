@@ -14,7 +14,7 @@
     path: /etc/sysctl.conf
     line: 'vm.max_map_count=262144'
     state: present
-    backup: yes
+    backup: true
   tags:
     - elastic
 
@@ -61,7 +61,7 @@
   community.docker.docker_compose_v2:
     project_src: "{{ docker_directory }}"
     files:
-    - "{{ docker_compose }}"
+      - "{{ docker_compose }}"
   register: output
   tags:
     - elastic
@@ -127,4 +127,3 @@
     var: es_data
   tags:
     - elastic
-

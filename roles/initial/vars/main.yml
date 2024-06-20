@@ -1,3 +1,4 @@
+---
 # roles/initial/vars/main.yml
 ansible_user: "zoubkovvv"
 ansible_public_key: "{{ lookup('file', 'files/id_rsa.pub') }}"
@@ -6,10 +7,19 @@ useful_packages:
   - ca-certificates
   - chrony
   - curl
-  - gnupg-agent
+  - git
   - gnupg
+  - gnupg-agent
   - htop
+  - jq
+  - lsof
+  - make
+  - mc
   - software-properties-common
+  - sysstat
   - tree
+  - unzip
+  - vim
   - wget
-update_packages: false
+  - zip
+update_packages: true

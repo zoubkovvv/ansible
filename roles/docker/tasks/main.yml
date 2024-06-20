@@ -45,7 +45,7 @@
   ansible.builtin.apt_repository:
     repo: deb [arch={{ arch_mapping[ansible_architecture] }} signed-by={{ keyrings_folder }}/docker.asc] {{ docker_url }} {{ ansible_lsb.codename }} stable
     state: present
-    update_cache: True
+    update_cache: true
   tags:
     - docker
 
@@ -60,7 +60,7 @@
   ansible.builtin.service:
     name: docker
     state: started
-    enabled: True
+    enabled: true
   tags:
     - docker
 
@@ -75,7 +75,6 @@
   ansible.builtin.user:
     name: "{{ docker_user }}"
     groups: docker
-    append: True
+    append: true
   tags:
     - docker
-

@@ -1,11 +1,11 @@
 ---
 # Tasks for initial role
-- name: Print startup messages 
+- name: Print startup messages
   ansible.builtin.debug:
     msg: "{{ item }}"
   loop:
     - "{{ initial_message }}"
-    - "{{ startup_message }}" 
+    - "{{ startup_message }}"
   tags:
     - initial_role
 
@@ -13,7 +13,7 @@
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     state: present
-    create_home: yes
+    create_home: true
   tags:
     - initial_role
 
@@ -29,7 +29,7 @@
   ansible.builtin.apt:
     name: "{{ useful_packages }}"
     state: latest
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   tags:
     - initial_role
@@ -37,8 +37,61 @@
 - name: Update all packages
   ansible.builtin.apt:
     upgrade: dist
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
+    autoclean: true
+    autoremove: true
   tags:
     - initial_role
   when: update_packages
+
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+    use: systemd
+  tags:
+    - initial_role
+    - set_hostname
+
+- name: Ensure /etc/hostname is updated
+  ansible.builtin.lineinfile:
+    path: /etc/hostname
+    line: "{{ inventory_hostname }}"
+    create: true
+  tags:
+    - initial_role
+    - set_hostname
+
+- name: Ensure /etc/hosts is updated
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1 {{ inventory_hostname }}"
+    create: true
+  tags:
+    - initial_role
+    - set_hostname
+
+
+- name: Add or update /etc/hosts entry
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    state: present
+    regexp: "^{{ hostvars[item].ansible_host }} "
+    line: "{{ hostvars[item].ansible_host }} {{ item }}"
+    backup: true
+  loop: "{{ groups['rancher'] }}"
+      #- name: Display ansible_hostname
+      #  debug:
+      #    msg: "ansible-hostname is {{ansible_hostname}}"
+      #- name: Add or update /etc/hosts entry
+      #  ansible.builtin.lineinfile:
+      #path: /etc/hosts
+      #state: present
+      #regexp: "^{{ item.ansible_host }} "
+      #line: "{{ item.ansible_host }} {{ item.inventory_hostname }}"
+      #loop: "{{ ansible_play_batch }}"
+      #tags:
+      #- initial_role
+      #- add_host
+
