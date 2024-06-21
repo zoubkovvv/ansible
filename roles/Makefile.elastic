@@ -1,0 +1,13 @@
+.PHONY: check-syntax deploy
+
+# Variables
+INVENTORY = inventory
+PLAYBOOK = playbook.yml
+LIMIT = elastic
+VAULT_PASS_FILE = ~/.vlt/.vlt_pass
+
+check-syntax:
+	ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --syntax-check --vault-password-file $(VAULT_PASS_FILE)
+
+deploy:
+	ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --limit $(LIMIT) --vault-password-file $(VAULT_PASS_FILE)

@@ -1,7 +1,7 @@
 ---
 # playbook.yml
 - name: Playbook for running different roles
-  hosts: all
+  hosts: elastic
   become: true
   vars:
     roles_to_run:
