@@ -1,14 +1,13 @@
 ---
 # playbook.yml
 - name: Playbook for running different roles
-  hosts: rancher
+  hosts: rke
   become: true
   vars:
     roles_to_run:
       initial: true
-      docker: false
+      docker: false 
       node-exporter: false
-      elasticsearch: false
       vector: false
 
   tasks:
@@ -20,4 +19,5 @@
         loop_var: role_item
       vars:
         app: "{{ role_item.key }}"
+        disable_swap: true
       when: role_item.value

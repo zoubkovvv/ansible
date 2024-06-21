@@ -23,3 +23,4 @@ useful_packages:
   - wget
   - zip
 update_packages: true
+disable_swap: false

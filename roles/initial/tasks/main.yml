@@ -12,10 +12,27 @@
 - name: Ensure the user exists
   ansible.builtin.user:
     name: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     state: present
     create_home: true
+    groups: sudo
+    append: true
   tags:
     - initial_role
+
+- name: Add sudoers file for user
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/{{ ansible_user }}
+    content: "{{ ansible_user }} ALL=(ALL:ALL) NOPASSWD: ALL"
+    owner: root
+    group: root
+    mode: '0440'
+    backup: true
+  tags:
+    - initial_role
+    - sudo
+  notify:
+    - Validate sudoers file
 
 - name: Add SSH key to the user's authorized_keys
   ansible.builtin.authorized_key:
@@ -72,7 +89,6 @@
     - initial_role
     - set_hostname
 
-
 - name: Add or update /etc/hosts entry
   ansible.builtin.lineinfile:
     path: /etc/hosts
@@ -80,18 +96,22 @@
     regexp: "^{{ hostvars[item].ansible_host }} "
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     backup: true
-  loop: "{{ groups['rancher'] }}"
-      #- name: Display ansible_hostname
-      #  debug:
-      #    msg: "ansible-hostname is {{ansible_hostname}}"
-      #- name: Add or update /etc/hosts entry
-      #  ansible.builtin.lineinfile:
-      #path: /etc/hosts
-      #state: present
-      #regexp: "^{{ item.ansible_host }} "
-      #line: "{{ item.ansible_host }} {{ item.inventory_hostname }}"
-      #loop: "{{ ansible_play_batch }}"
-      #tags:
-      #- initial_role
-      #- add_host
+  loop: "{{ groups['rke'] }}"
 
+- name: Disable SWAP
+  shell: |
+    swapoff -a
+  tags:
+    - initial_role
+    - disable_swap
+  when: disable_swap
+
+- name: Disable SWAP in fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+  tags:
+    - initial_role
+    - disable_swap
+  when: disable_swap
