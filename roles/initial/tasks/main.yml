@@ -20,19 +20,17 @@
   tags:
     - initial_role
 
-- name: Add sudoers file for user
-  ansible.builtin.copy:
-    dest: /etc/sudoers.d/{{ ansible_user }}
-    content: "{{ ansible_user }} ALL=(ALL:ALL) NOPASSWD: ALL"
-    owner: root
-    group: root
-    mode: '0440'
-    backup: true
+- name: Configure sudoers to enable users to execute commands
+  community.general.sudoers:
+    name: "{{ ansible_user }}"
+    user: "{{ ansible_user }}"
+    nopassword: true
+    runas: 'ALL'
+    commands: 'ALL'
+    validation: required
   tags:
     - initial_role
     - sudoers
-  notify:
-    - Validate sudoers file
 
 - name: Add SSH key to the user's authorized_keys
   ansible.builtin.authorized_key:
@@ -43,11 +41,11 @@
     - initial_role
 
 - name: Set timezone to "{{ timezone  }}"
-  community.general.timezone:
+  ansible.builtin.timezone:
     name: "{{ timezone  }}"
   tags:
     - initial_role
-    - timezone
+    - set_timezone
 
 - name: Update package cache and install useful packages
   ansible.builtin.apt:
@@ -57,6 +55,14 @@
     cache_valid_time: 3600
   tags:
     - initial_role
+
+- name: Uninstall useless packages
+  ansible.builtin.package:
+    name: "{{ useless_packages }}"
+    state: absent
+  tags:
+    - initial_role
+    - uninstall_packages
 
 - name: Update all packages
   ansible.builtin.apt:
@@ -111,6 +117,7 @@
   tags:
     - initial_role
     - disable_swap
+  changed_when: false
   when: disable_swap
 
 - name: Disable SWAP in fstab

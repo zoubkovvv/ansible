@@ -6,9 +6,12 @@
   vars:
     roles_to_run:
       initial: true
-      docker: false 
+      docker: false
       node-exporter: false
       vector: false
+    become_pass: "{{ ansible_become_password }}"
+  vars_files:
+    - credentials.yml
 
   tasks:
     - name: Include roles based on conditions
