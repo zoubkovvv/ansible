@@ -40,6 +40,15 @@
   tags:
     - initial_role
 
+- name: Stop UFW service
+  ansible.builtin.service:
+    name: ufw
+    state: stopped
+    enabled: false
+  tags:
+    - initial_role
+    - firewall
+
 - name: Set timezone to "{{ timezone  }}"
   ansible.builtin.timezone:
     name: "{{ timezone  }}"
