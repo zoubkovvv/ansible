@@ -24,3 +24,4 @@ useful_packages:
   - zip
 update_packages: true
 disable_swap: false
+timezone: Asia/Yekaterinburg

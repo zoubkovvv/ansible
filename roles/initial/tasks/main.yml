@@ -30,7 +30,7 @@
     backup: true
   tags:
     - initial_role
-    - sudo
+    - sudoers
   notify:
     - Validate sudoers file
 
@@ -41,6 +41,13 @@
     state: present
   tags:
     - initial_role
+
+- name: Set timezone to "{{ timezone  }}"
+  community.general.timezone:
+    name: "{{ timezone  }}"
+  tags:
+    - initial_role
+    - timezone
 
 - name: Update package cache and install useful packages
   ansible.builtin.apt:
