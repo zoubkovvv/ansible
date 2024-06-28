@@ -8,6 +8,7 @@ services:
       - "8686:8686"
     volumes:
       - {{ vector_cfg_volume_src }}:{{ vector_cfg_volume_dst }}:ro
+    command: ["--config", "/etc/vector/vector.yaml"]
     restart: always
     mem_limit: {{ docker_mem_limit }}
     logging:
