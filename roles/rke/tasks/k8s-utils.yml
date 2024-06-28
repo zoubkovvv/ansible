@@ -1,12 +1,12 @@
 ---
 - name: Check Helm exist
   ansible.builtin.stat:
-    path="{{ path_to_base_path }}/helm"
+    path="{{ utils_path }}/helm"
   register: helm_exists
 
 - name: Check Helm version
   ansible.builtin.command:
-    cmd: "{{ path_to_base_path }}/helm version --short --client"
+    cmd: "{{ utils_path }}/helm version --short --client"
   register: helm_version_check
   changed_when: false
   when: helm_exists.stat.exists
@@ -18,7 +18,7 @@
 
 - name: Install Helm if not exists
   ansible.builtin.unarchive:
-    src: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+    src: "{{ helm_url }}-{{ helm_version }}-{{ arch }}.tar.gz"
     dest: /usr/local/bin
     extra_opts: "--strip-components=1"
     owner: root
@@ -31,7 +31,7 @@
 
 - name: Check Helm version
   ansible.builtin.command:
-    cmd: "{{ path_to_base_path }}/helm version --short --client"
+    cmd: "{{ utils_path }}/helm version --short --client"
   register: helm_version_check
   changed_when: false
 
@@ -41,12 +41,12 @@
 
 - name: Check kubectl exist
   ansible.builtin.stat:
-    path="{{ path_to_base_path }}/kubectl"
+    path="{{ utils_path }}/kubectl"
   register: kubectl_exists
 
 - name: Check kubectl version
   ansible.builtin.command:
-    cmd: "{{ path_to_base_path }}/kubectl version --short --client"
+    cmd: "{{ utils_path }}/kubectl version --short --client"
   register: kubectl_version_check
   when: kubectl_exists.stat.exists
 
@@ -57,7 +57,7 @@
 
 - name: Install kubectl if not exists
   ansible.builtin.unarchive:
-    src: "{{ kubectl_url }}-{{ kubectl_version }}-linux-amd64.tar.gz"
+    src: "{{ kubectl_url }}-{{ kubectl_version }}-{{ arch }}.tar.gz"
     dest: /usr/local/bin
     extra_opts: "--strip-components=1"
     owner: root
@@ -65,7 +65,7 @@
     mode: 0755
     remote_src: true
   args:
-    creates: /usr/local/bin/helm
+    creates: "{{ utils_path }}/helm"
   when: kubectl_upgrade | default(false) or not kubectl_exists.stat.exists
 
 - name: Show kubectl version

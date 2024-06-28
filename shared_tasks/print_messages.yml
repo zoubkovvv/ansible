@@ -1,13 +1,12 @@
 ---
-- name: Print tags of role
-  ansible.builtin.debug:
-    msg: "Tags of this role: {{ app }}"
-
 - name: Print startup messages
   ansible.builtin.debug:
     msg: "{{ item }}"
   loop:
     - "{{ initial_message }}"
     - "{{ startup_message }}"
+  changed_when: false
+  run_once: true
+  delegate_to: localhost
   tags:
     - "{{ app }}"

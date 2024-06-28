@@ -1,5 +1,9 @@
 ---
 # tasks file for rke
+- name: Print messages
+  ansible.builtin.import_tasks: ../../../shared_tasks/print_messages.yml
+  tags: preinstall
+
 - name: Disable swap
   ansible.builtin.import_tasks: disable_swap.yml
   tags: preinstall

@@ -1,6 +1,7 @@
 ---
 # Tasks for initial role
-- ansible.builtin.import_tasks: ../../shared_tasks/print_messages.yml
+- name: Print messages
+  ansible.builtin.import_tasks: ../../../shared_tasks/print_messages.yml
 
 - name: Ensure the user exists
   ansible.builtin.user:
