@@ -1,13 +1,6 @@
 ---
 # Tasks for initial role
-- name: Print startup messages
-  ansible.builtin.debug:
-    msg: "{{ item }}"
-  loop:
-    - "{{ initial_message }}"
-    - "{{ startup_message }}"
-  tags:
-    - initial_role
+- ansible.builtin.import_tasks: ../../shared_tasks/print_messages.yml
 
 - name: Ensure the user exists
   ansible.builtin.user:
@@ -119,22 +112,3 @@
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     backup: true
   loop: "{{ groups['rke'] }}"
-
-- name: Disable SWAP
-  shell: |
-    swapoff -a
-  tags:
-    - initial_role
-    - disable_swap
-  changed_when: false
-  when: disable_swap
-
-- name: Disable SWAP in fstab
-  replace:
-    path: /etc/fstab
-    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-    replace: '# \1'
-  tags:
-    - initial_role
-    - disable_swap
-  when: disable_swap

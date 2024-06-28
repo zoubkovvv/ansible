@@ -1,0 +1,15 @@
+---
+# tasks file for rke
+- name: Disable swap
+  ansible.builtin.import_tasks: disable_swap.yml
+  tags: preinstall
+
+- name: Set sysctl
+  ansible.builtin.import_tasks: sysctl.yml
+  tags: preinstall
+
+- name: Set k8s-utils
+  ansible.builtin.import_tasks: k8s-utils.yml
+  delegate_to: localhost
+  run_once: true
+  tags: preinstall

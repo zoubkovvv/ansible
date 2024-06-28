@@ -5,7 +5,8 @@
   become: true
   vars:
     roles_to_run:
-      initial: true
+      initial: false
+      rke: true
       docker: false
       node-exporter: false
       vector: false

@@ -1,27 +1,17 @@
 ---
 # tasks file for elastic
-- name: Print startup messages
-  ansible.builtin.debug:
-    msg: "{{ item }}"
-  loop:
-    - "{{ initial_message }}"
-    - "{{ startup_message }}"
-  tags:
-    - elastic
+- import_tasks: ../../shared_tasks/print_messages.yaml
 
-- name: Add vm.max_map_count to sysctl.conf
-  lineinfile:
-    path: /etc/sysctl.conf
-    line: 'vm.max_map_count=262144'
+- name: Set vm.max_map_count
+  ansible.builtin.sysctl:
+    name: "vm.max_map_count"
+    value: "262144"
+    sysctl_set: true
     state: present
-    backup: true
+    reload: true
+    sysctl_file: /etc/sysctl.d/90-elastic.conf
   tags:
-    - elastic
-
-- name: Reload sysctl settings
-  command: sysctl -p
-  tags:
-    - elastic
+    - sysctl
 
 - name: Create multiple directories with permissions 0777
   ansible.builtin.file:

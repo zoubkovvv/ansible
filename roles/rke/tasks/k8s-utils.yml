@@ -1,0 +1,74 @@
+---
+- name: Check Helm exist
+  ansible.builtin.stat:
+    path="{{ path_to_base_path }}/helm"
+  register: helm_exists
+
+- name: Check Helm version
+  ansible.builtin.command:
+    cmd: "{{ path_to_base_path }}/helm version --short --client"
+  register: helm_version_check
+  changed_when: false
+  when: helm_exists.stat.exists
+
+- name: Show Helm version before
+  ansible.builtin.debug:
+    msg: "Helm version: {{ helm_version_check.stdout }}"
+  when: helm_exists.stat.exists
+
+- name: Install Helm if not exists
+  ansible.builtin.unarchive:
+    src: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  args:
+    creates: /usr/local/bin/helm
+  when: helm_upgrade | default(false) or not helm_exists.stat.exists
+
+- name: Check Helm version
+  ansible.builtin.command:
+    cmd: "{{ path_to_base_path }}/helm version --short --client"
+  register: helm_version_check
+  changed_when: false
+
+- name: Show Helm version after
+  ansible.builtin.debug:
+    msg: "Helm version: {{ helm_version_check.stdout }}"
+
+- name: Check kubectl exist
+  ansible.builtin.stat:
+    path="{{ path_to_base_path }}/kubectl"
+  register: kubectl_exists
+
+- name: Check kubectl version
+  ansible.builtin.command:
+    cmd: "{{ path_to_base_path }}/kubectl version --short --client"
+  register: kubectl_version_check
+  when: kubectl_exists.stat.exists
+
+- name: Show kubectl version
+  ansible.builtin.debug:
+    msg: "kubectl version: {{ kubectl_version_check.stdout }}"
+  when: kubectl_exists.stat.exists
+
+- name: Install kubectl if not exists
+  ansible.builtin.unarchive:
+    src: "{{ kubectl_url }}-{{ kubectl_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: true
+  args:
+    creates: /usr/local/bin/helm
+  when: kubectl_upgrade | default(false) or not kubectl_exists.stat.exists
+
+- name: Show kubectl version
+  ansible.builtin.debug:
+    msg: "kubectl version: {{ kubectl_version_check.stdout }}"
+  when: kubectl_exists.stat.exists

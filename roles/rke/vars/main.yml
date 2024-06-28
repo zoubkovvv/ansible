@@ -1,0 +1,7 @@
+---
+# vars file for rke
+path_to_base_path: /usr/local/bin
+kubectl_version: .0
+kubectl_url: https://gelm
+helm_version: v3.11.0
+helm_url: https://get.helm.sh/helm

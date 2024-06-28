@@ -1,0 +1,28 @@
+---
+- name: Load br_netfilter module
+  ansible.builtin.modprobe:
+    name: br_netfilter
+  tags:
+    - modprobe
+
+- name: Ensure br_netfilter module is loaded at boot
+  ansible.builtin.lineinfile:
+    path: /etc/modules-load.d/modules.conf
+    line: br_netfilter
+    create: true
+  tags:
+    - modprobe
+
+- name: Set net.bridge.bridge-nf-call-iptables to 1
+  ansible.builtin.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_set: true
+    state: present
+    reload: true
+    sysctl_file: /etc/sysctl.d/90-rke.conf
+  loop:
+    - { name: "net.bridge.bridge-nf-call-iptables", value: "1" }
+    - { name: "net.ipv4.ip_forward", value: "1" }
+  tags:
+    - sysctl

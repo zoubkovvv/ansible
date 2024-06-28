@@ -1,0 +1,19 @@
+---
+- name: Disable SWAP
+  shell: |
+    swapoff -a
+  tags:
+    - initial_role
+    - disable_swap
+  changed_when: false
+  when: disable_swap
+
+- name: Disable SWAP in fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+  tags:
+    - initial_role
+    - disable_swap
+  when: disable_swap

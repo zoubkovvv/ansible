@@ -1,17 +1,6 @@
 ---
 # tasks file for docker
-- name: Print tags of tasks
-  ansible.builtin.debug:
-    msg: "Tags of this task: {{ app }}"
-
-- name: Print startup messages
-  ansible.builtin.debug:
-    msg: "{{ item }}"
-  loop:
-    - "{{ initial_message }}"
-    - "{{ startup_message }}"
-  tags:
-    - "{{ app }}"
+- import_tasks: ../../shared_tasks/print_messages.yml
 
 - name: Uninstall old packages
   ansible.builtin.apt:

@@ -2,6 +2,7 @@
 # roles/initial/vars/main.yml
 ansible_user: "zoubkovvv"
 ansible_public_key: "{{ lookup('file', 'files/id_rsa.pub') }}"
+rke: false
 useful_packages:
   - apt-transport-https
   - ca-certificates
@@ -26,8 +27,8 @@ useless_packages:
   - unattended-upgrades
   - sosreport
   - apport
-    #  - cloud-init
-    #  - snapd
+# - cloud-init
+# - snapd
 update_packages: true
 disable_swap: false
 timezone: Asia/Yekaterinburg
