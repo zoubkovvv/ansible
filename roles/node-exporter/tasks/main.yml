@@ -15,7 +15,7 @@
     state: directory
     mode: '0777'
   tags:
-    - node-exporter
+    - "{{ app }}"
 
 - name: Template configuration files
   ansible.builtin.template:
@@ -26,7 +26,7 @@
     mode: '0644'
   notify: Restart Docker Services
   tags:
-    - node-exporter
+    - "{{ app }}"
 
 - name: Create and start services using Docker Compose
   community.docker.docker_compose_v2:
@@ -35,10 +35,10 @@
       - "{{ docker_compose }}"
   register: output
   tags:
-    - node-exporter
+    - "{{ app }}"
 
 - name: Debug output
   ansible.builtin.debug:
     var: output
   tags:
-    - node-exporter
+    - "{{ app }}"
