@@ -5,3 +5,6 @@ server01 ansible_host=192.168.0.91
 rke-cluster-01 ansible_host=192.168.0.11
 rke-cluster-02 ansible_host=192.168.0.12
 rke-cluster-03 ansible_host=192.168.0.13
+
+[haproxy]
+haproxy ansible_host=192.168.0.254
