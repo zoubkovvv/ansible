@@ -1,8 +1,14 @@
 ---
 # vars file for rke
 utils_path: /usr/local/bin
-arch: linux-amd64
-kubectl_version: v1.28.0
-kubectl_url: https://gelm
+os: linux
+arch: amd64
 helm_version: v3.11.0
 helm_url: https://get.helm.sh/helm
+helm_upgrade: true
+kubectl_version: v1.28.0
+kubectl_url: https://dl.k8s.io/release
+kubectl_upgrade: true
+rke_version: v1.5.10
+rke_url: https://github.com/rancher/rke/releases/download
+rke_upgrade: true

@@ -1,0 +1,28 @@
+---
+nodes:
+  - address: 192.168.0.11
+    user: zoubkovvv
+    role: [controlplane, etcd, worker]
+    hostname_override: rke-cluster-01
+
+  - address: 192.168.0.12
+    user: zoubkovvv
+    role: [controlplane, etcd, worker]
+    hostname_override: rke-cluster-02
+    #  - address: 192.168.0.13
+    #user: zoubkovvv
+    #role: [controlplane, etcd, worker]
+    #hostname_override: rke-cluster-03
+
+services:
+  etcd:
+    snapshot: true
+    creation: 6h
+    retention: 24h
+
+ingress:
+  provider: nginx
+  options:
+    use-forwarded-headers: "true"
+
+ignore_docker_version: true

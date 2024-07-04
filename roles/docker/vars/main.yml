@@ -5,6 +5,8 @@ arch_mapping:  # Map {{ ansible_architecture }} names to Docker's arch names
   aarch64: arm64
 docker_user: zoubkovvv
 docker_url: https://download.docker.com/linux/ubuntu
+docker_version: 26.1.4
+docker_install_version: 5:{{ docker_version }}-1~ubuntu.20.04~focal
 keyrings_folder: /etc/apt/keyrings
 docker_old_packages:
   - docker.io
@@ -16,8 +18,8 @@ docker_old_packages:
   - runc
 
 docker_packages:
-  - docker-ce
-  - docker-ce-cli
+  - docker-ce={{ docker_install_version }}
+  - docker-ce-cli={{ docker_install_version }}
   - containerd.io
   - docker-buildx-plugin
   - docker-compose-plugin

@@ -5,10 +5,10 @@
   become: true
   vars:
     roles_to_run:
-      initial: true
+      initial: false
       docker: true
-      vector: true
-      node-exporter: true
+      vector: false
+      node-exporter: false
       rke: true
     become_pass: "{{ ansible_become_password }}"
   vars_files:

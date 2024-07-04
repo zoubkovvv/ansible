@@ -41,6 +41,7 @@
 - name: Install Docker packages
   ansible.builtin.apt:
     name: "{{ docker_packages }}"
+    allow_downgrade: true
   notify: Restart docker
   tags:
     - docker

@@ -2,4 +2,3 @@
 # defaults file for rke
 initial_message: "Welcome to the {{ app }} role!"
 startup_message: "Performing {{ app }} setup tasks..."
-
