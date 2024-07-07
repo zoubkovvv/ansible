@@ -16,9 +16,6 @@
 #    Set remote_src=yes to unpack an archive which already exists on the target.
 #    If checksum validation is desired, use ansible.builtin.get_url or ansible.builtin.uri instead to fetch the file and set remote_src=yes.
 #    For Windows targets, use the community.windows.win_unzip module instead.
-#    
-#        checksum: sha256:http://example.com/path/sha256sum.txt
-#    https://get.helm.sh/helm-v3.15.2-linux-arm64.tar.gz.sha256sum
 
 - name: Install Helm if not exists
   ansible.builtin.unarchive:
@@ -65,7 +62,7 @@
     group: root
     mode: 0755
     validate_certs: false
-    checksum:  "sha256:{{ lookup('url', '{{ kubectl_url }}/{{ kubectl_version }}/bin/{{ os }}/{{ arch }}/kubectl.sha256') }}"
+    checksum: "sha256:{{ lookup('url', '{{ kubectl_url }}/{{ kubectl_version }}/bin/{{ os }}/{{ arch }}/kubectl.sha256') }}"
   when: kubectl_upgrade | default(false) or not kubectl_exists.stat.exists
 
 - name: Check kubectl version after install or upgrade
@@ -99,7 +96,7 @@
     owner: root
     group: root
     mode: 0755
-#    checksum: "sha256:{{ lookup('url', '{{ rke_url }}/{{ rke_version }}/sha256sum.txt') }}" 
+    # checksum: "sha256:{{ lookup('url', '{{ rke_url }}/{{ rke_version }}/sha256sum.txt') }}"
   when: rke_upgrade | default(false) or not rke_exists.stat.exists
 
 - name: Check RKE version after install or upgrade

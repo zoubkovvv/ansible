@@ -26,6 +26,36 @@
     - initial_role
     - sudoers
 
+- name: Start services
+  ansible.builtin.systemd:
+    name: sshd
+    enabled: true
+    state: started
+
+- name: disable root login
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin.*'
+    replace: 'PermitRootLogin no'
+
+- name: enable SSH forwarding (tunnel through Bastion)
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^AllowTcpForwarding.*'
+    replace: 'AllowTcpForwarding yes'
+    backup: true
+  when: enable_ssh_tcp_forwarding|bool
+  notify:
+    - Restart sshd
+
+- name: disable password login on bastion
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication.*'
+    replace: 'PasswordAuthentication no'
+  notify:
+    - Restart sshd
+
 - name: Add SSH key to the user's authorized_keys
   ansible.builtin.authorized_key:
     user: "{{ ansible_user }}"
@@ -49,6 +79,18 @@
   tags:
     - initial_role
     - set_timezone
+
+- name: ensure journalctl will not eat whole disk
+  ansible.builtin.replace:
+    path: /etc/systemd/journald.conf
+    regexp: '^#SystemMaxUse.*'
+    replace: "{{ ('SystemMaxUse=' + journalctl_max_disk_usage) }}"
+    backup: true
+  notify:
+    - Restart journald
+  tags:
+    - initial_role
+    - journalctl
 
 - name: Update package cache and install useful packages
   ansible.builtin.apt:

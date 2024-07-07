@@ -32,3 +32,5 @@ useless_packages:
 update_packages: true
 disable_swap: false
 timezone: Asia/Yekaterinburg
+journalctl_max_disk_usage: 1G
+enable_ssh_tcp_forwarding: true
