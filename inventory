@@ -8,3 +8,10 @@ rke-cluster-03 ansible_host=192.168.0.13
 
 [lb]
 haproxy ansible_host=192.168.0.254
+
+[rke-cluster]
+rke-master-01 ansible_host=192.168.0.201
+rke-master-02 ansible_host=192.168.0.202
+rke-master-03 ansible_host=192.168.0.203
+rke-worker-01 ansible_host=192.168.0.211
+rke-worker-02 ansible_host=192.168.0.212

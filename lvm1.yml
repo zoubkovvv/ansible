@@ -1,0 +1,22 @@
+---
+- name: Extend LVM Volume
+  hosts: lb
+  gather_facts: true
+  become: true
+  tasks:
+
+  tasks:
+    - name: Make sure VG has these disks assigned
+      community.general.lvg:
+        vg: ubuntu-vg
+        pvs:
+          - /dev/sda3
+          - /dev/sdb
+
+    - name: Extend logical volume with available space
+      community.general.lvol:
+        lv: ubuntu-lv
+        vg: ubuntu-vg
+        size: 100%FREE
+        force: yes
+        resizefs: yes
