@@ -1,19 +1,24 @@
 ---
 nodes:
   - address: 192.168.0.11
-    user: zoubkovvv
     role: [controlplane, etcd, worker]
     hostname_override: rke-cluster-01
+    user: zoubkovvv
+    ssh_key_path: /home/zoubkovvv/.ssh/id_rsa
 
   - address: 192.168.0.12
-    user: zoubkovvv
     role: [controlplane, etcd, worker]
     hostname_override: rke-cluster-02
+    user: zoubkovvv
+    ssh_key_path: /home/zoubkovvv/.ssh/id_rsa
 
   - address: 192.168.0.13
-    user: zoubkovvv
     role: [controlplane, etcd, worker]
     hostname_override: rke-cluster-03
+    user: zoubkovvv
+    ssh_key_path: /home/zoubkovvv/.ssh/id_rsa
+
+kubernetes_version: v1.24.17-rancher1-1
 
 services:
   etcd:

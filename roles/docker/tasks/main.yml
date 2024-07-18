@@ -46,6 +46,14 @@
   tags:
     - docker
 
+- name: Prevent Docker from being upgraded
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - docker-ce
+    - docker-ce-cli
+
 - name: Check docker is active
   ansible.builtin.service:
     name: docker
@@ -68,3 +76,6 @@
     append: true
   tags:
     - docker
+
+- name: Flush handlers
+  meta: flush_handlers

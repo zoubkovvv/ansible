@@ -1,19 +1,27 @@
 ---
+- name: Check if swap enabled
+  ansible.builtin.shell: swapon
+  register: swap_present
+  changed_when: false
+  ignore_errors: true
+  tags:
+    - disable_swap
+
 - name: Disable SWAP
-  shell: |
+  ansible.builtin.shell: |
     swapoff -a
   tags:
-    - initial_role
     - disable_swap
   changed_when: false
-  when: disable_swap
+  when:
+    - disable_swap
+    - swap_present.stdout != ""
 
 - name: Disable SWAP in fstab
-  replace:
+  ansible.builtin.replace:
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
   tags:
-    - initial_role
     - disable_swap
   when: disable_swap

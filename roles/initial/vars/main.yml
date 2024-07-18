@@ -5,6 +5,7 @@ ansible_public_key: "{{ lookup('file', 'files/id_rsa.pub') }}"
 rke: false
 useful_packages:
   - apt-transport-https
+  - bash-completion
   - ca-certificates
   - chrony
   - curl
@@ -16,6 +17,7 @@ useful_packages:
   - lsof
   - make
   - mc
+  - net-tools
   - software-properties-common
   - sysstat
   - tree
@@ -23,6 +25,7 @@ useful_packages:
   - vim
   - wget
   - zip
+
 useless_packages:
   - unattended-upgrades
   - sosreport

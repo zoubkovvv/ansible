@@ -26,19 +26,19 @@
     - initial_role
     - sudoers
 
-- name: Start services
+- name: Start ssh service
   ansible.builtin.systemd:
     name: sshd
     enabled: true
     state: started
 
-- name: disable root login
+- name: Disable root login
   ansible.builtin.replace:
     path: /etc/ssh/sshd_config
     regexp: '^PermitRootLogin.*'
     replace: 'PermitRootLogin no'
 
-- name: enable SSH forwarding (tunnel through Bastion)
+- name: Enable SSH forwarding
   ansible.builtin.replace:
     path: /etc/ssh/sshd_config
     regexp: '^AllowTcpForwarding.*'
@@ -48,7 +48,7 @@
   notify:
     - Restart sshd
 
-- name: disable password login on bastion
+- name: Disable password login
   ansible.builtin.replace:
     path: /etc/ssh/sshd_config
     regexp: '^PasswordAuthentication.*'
@@ -80,7 +80,7 @@
     - initial_role
     - set_timezone
 
-- name: ensure journalctl will not eat whole disk
+- name: Ensure journalctl will not eat whole disk
   ansible.builtin.replace:
     path: /etc/systemd/journald.conf
     regexp: '^#SystemMaxUse.*'
@@ -92,12 +92,15 @@
     - initial_role
     - journalctl
 
+- name: Update apt cache if needed.
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
 - name: Update package cache and install useful packages
   ansible.builtin.apt:
     name: "{{ useful_packages }}"
     state: latest
-    update_cache: true
-    cache_valid_time: 3600
   tags:
     - initial_role
 
@@ -112,10 +115,11 @@
 - name: Update all packages
   ansible.builtin.apt:
     upgrade: dist
-    update_cache: true
-    cache_valid_time: 3600
     autoclean: true
     autoremove: true
+    install_recommends: no
+    force_apt_get: yes
+    update_cache: yes
   tags:
     - initial_role
   when: update_packages
@@ -155,3 +159,6 @@
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     backup: true
   loop: "{{ groups['rke'] }}"
+
+- name: Flush handlers
+  meta: flush_handlers

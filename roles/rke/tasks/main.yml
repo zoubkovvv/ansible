@@ -13,7 +13,20 @@
   tags: preinstall
 
 - name: Set k8s-utils
-  ansible.builtin.import_tasks: k8s-utils.yml
+  ansible.builtin.import_tasks: k8s_utils.yml
   delegate_to: localhost
   run_once: true
   tags: preinstall
+
+- name: Set rke cluster
+  ansible.builtin.import_tasks: rke_cluster.yml
+  delegate_to: localhost
+  run_once: true
+  tags: rke_cluster_install
+
+- name: Set rancher cluster
+  ansible.builtin.import_tasks: rancher.yml
+  delegate_to: localhost
+  run_once: true
+  tags: rke_cluster_install
+

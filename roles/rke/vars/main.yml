@@ -1,14 +1,15 @@
 ---
 # vars file for rke
+ansible_user: "zoubkovvv"
 utils_path: /usr/local/bin
 os: linux
 arch: amd64
-helm_version: v3.11.0
+helm_version: "3.10.0"
 helm_url: https://get.helm.sh/helm
-helm_upgrade: true
-kubectl_version: v1.28.0
+helm_src: "{{ helm_url }}-{{ helm_version }}-{{ os }}-{{ arch }}.tar.gz"
+kubectl_version: "v1.27.15"
 kubectl_url: https://dl.k8s.io/release
-kubectl_upgrade: true
-rke_version: v1.5.10
+kubectl_src: "{{ kubectl_url }}/{{ kubectl_version }}/bin/{{ os }}/{{ arch }}/kubectl"
+rke_version: "1.4.19"
 rke_url: https://github.com/rancher/rke/releases/download
-rke_upgrade: true
+_rke_config_dir: /home/zoubkovvv/rke
