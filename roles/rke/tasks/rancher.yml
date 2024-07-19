@@ -31,16 +31,16 @@
   register: pod_list
   until: pod_list|json_query('resources[*].status.phase')|unique == ["Running"]
 
-      #- name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
-      #  kubernetes.core.helm:
-      #    name: rancher
-      #    chart_ref: rancher-stable/rancher
-      #    release_namespace: cattle-system
-      #    create_namespace: true
-      #    update_repo_cache: true
-      #    chart_version: 2.6.8
-      #    values:
-      #      hostname:
-      #        rancher.home.lab
-      #      bootstrapPassword:
-      #        admin
+# - name: Deploy latest version of Prometheus chart inside monitoring namespace (and create it)
+#  kubernetes.core.helm:
+#    name: rancher
+#    chart_ref: rancher-stable/rancher
+#    release_namespace: cattle-system
+#    create_namespace: true
+#    update_repo_cache: true
+#    chart_version: 2.6.8
+#    values:
+#      hostname:
+#        rancher.home.lab
+#      bootstrapPassword:
+#        admin

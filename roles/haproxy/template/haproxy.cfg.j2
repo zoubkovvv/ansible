@@ -1,0 +1,111 @@
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
+
+    # See: https://ssl-config.mozilla.org/#server=haproxy&version=2.0.0
+    ssl-default-bind-ciphers PROFILE=SYSTEM
+    ssl-default-bind-options no-sslv3
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+#    timeout connect 30s
+#    timeout client  300s
+#    timeout server  300s
+#    timeout http-request 300s
+#    timeout http-keep-alive 300s
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+###############################################################################
+# Stats
+###############################################################################
+listen stats
+  bind 0.0.0.0:81
+  mode http
+  stats enable
+  stats uri /stats
+  stats auth admin:admin
+  stats refresh 10s
+  stats admin if TRUE
+
+###############################################################################
+# Frontends
+###############################################################################
+
+frontend rancher_cluster
+    bind 0.0.0.0:80
+    option forwardfor
+
+    acl acl_rancher_cluster hdr_reg(host) -i rancher.home.lab
+    use_backend rancher_cluster if acl_rancher_cluster
+
+    acl acl_cluster hdr_reg(host) -i www.home.lab
+    acl acl_cluster hdr_reg(host) -i nginx.home.lab
+    use_backend cluster if acl_cluster
+
+    default_backend cluster
+
+###############################################################################
+# Backends
+###############################################################################
+
+#backend rancher_cluster
+#    balance roundrobin
+#    option httpchk
+#    http-check send meth GET  uri /healthz
+
+#    server rke-cluster-01 192.168.0.11:80 check fall 3 rise 2
+#    server rke-cluster-02 192.168.0.12:80 check fall 3 rise 2
+#    server rke-cluster-03 192.168.0.13:80 check fall 3 rise 2
+
+###############################################################################
+
+#backend cluster
+#    balance roundrobin
+#    option httpchk
+#    http-check send meth GET  uri /healthz
+
+#    server rke-worker-01 192.168.0.211:80 check fall 3 rise 2
+#    server rke-worker-02 192.168.0.212:80 check fall 3 rise 2
+
+
+backend rancher_cluster
+    balance roundrobin
+    option httpchk
+    http-check send meth GET uri /healthz
+
+    {% for host in groups['rancher_cluster'] %}
+    server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
+    {% endfor %}
+
+###############################################################################
+
+backend cluster
+    balance roundrobin
+    option httpchk
+    http-check send meth GET uri /healthz
+
+    {% for host in groups['cluster_worker'] %}
+    server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
+    {% endfor %}

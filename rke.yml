@@ -9,7 +9,7 @@
       docker: true
       vector: false
       node-exporter: false
-      rke: true 
+      rke: true
     become_pass: "{{ ansible_become_password }}"
   vars_files:
     - credentials.yml

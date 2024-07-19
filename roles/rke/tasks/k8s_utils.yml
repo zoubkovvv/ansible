@@ -44,7 +44,7 @@
     remote_src: true
   args:
     creates: /usr/local/bin/helm
-  when: 
+  when:
     - helm_version not in helm_current_version.stdout
     - not helm_exists.stat.exists
 
@@ -59,8 +59,10 @@
 - name: Show Helm versions
   ansible.builtin.debug:
     msg:
-      - Helm version before: '{{ helm_current_version.stdout if helm_exists.stat.exists else "N/A" }}'
-      - Helm version after: '{{ helm_version_install.stdout if helm_version_install.stdout is defined else "N/A" }}'
+      - Helm version before: >-
+             '{{ helm_current_version.stdout if helm_exists.stat.exists else "N/A" }}'
+      - Helm version after: >-
+             '{{ helm_version_install.stdout if helm_version_install.stdout is defined else "N/A" }}'
 
 - name: Check kubectl exist before install or upgrade
   ansible.builtin.stat:
@@ -77,7 +79,8 @@
 - name: Show kubectl version
   ansible.builtin.debug:
     msg:
-      - kubectl version before: '{{ kubectl_existing_version.stdout if kubectl_exists.stat.exists else "N/A" }}'
+      - kubectl version before: >-
+                '{{ kubectl_existing_version.stdout if kubectl_exists.stat.exists else "N/A" }}'
 
 - name: Install kubectl if not exists
   ansible.builtin.get_url:
@@ -87,7 +90,7 @@
     group: root
     mode: 0755
     validate_certs: false
-    #checksum: "sha256:{{ lookup('url', '{{ kubectl_url }}/{{ kubectl_version }}/bin/{{ os }}/{{ arch }}/kubectl.sha256') }}"
+    # checksum: "sha256:{{ lookup('url', '{{ kubectl_url }}/{{ kubectl_version }}/bin/{{ os }}/{{ arch }}/kubectl.sha256') }}"
     checksum: "sha256:{{ lookup('url', '{{ kubectl_src }}.sha256') }}"
   when: kubectl_version not in kubectl_existing_version.stdout or not kubectl_exists.stat.exists
 
@@ -100,8 +103,10 @@
 - name: Show kubectl version
   ansible.builtin.debug:
     msg:
-      - kubectl version before: '{{ kubectl_existing_version.stdout if kubectl_exists.stat.exists else "N/A" }}'
-      - kubectl version after: '{{ kubectl_version_install.stdout if kubectl_version_install.stdout is defined else "N/A" }}'
+      - kubectl version before: >-
+                '{{ kubectl_existing_version.stdout if kubectl_exists.stat.exists else "N/A" }}'
+      - kubectl version after: >-
+                '{{ kubectl_version_install.stdout if kubectl_version_install.stdout is defined else "N/A" }}'
 
 - name: Execute the command in remote shell and write the output in the specified remote file
   ansible.builtin.shell:
@@ -128,7 +133,8 @@
 - name: Show k9s version
   ansible.builtin.debug:
     msg:
-      - k9s version before: '{{ k9s_existing_version.stdout if k9s_exists.stat.exists else "N/A" }}'
+      - k9s version before: >-
+            '{{ k9s_existing_version.stdout if k9s_exists.stat.exists else "N/A" }}'
 
 - name: Install k9s if not exists
   ansible.builtin.get_url:
@@ -138,8 +144,8 @@
     group: root
     mode: 0755
     validate_certs: false
-    #checksum: "sha256:{{ lookup('url', '{{ kubectl_url }}/{{ kubectl_version }}/bin/{{ os }}/{{ arch }}/kubectl.sha256') }}"
-    #checksum: "sha256:{{ lookup('url', '{{ kubectl_src }}.sha256') }}"
+    # checksum: "sha256:{{ lookup('url', '{{ kubectl_url }}/{{ kubectl_version }}/bin/{{ os }}/{{ arch }}/kubectl.sha256') }}"
+    # checksum: "sha256:{{ lookup('url', '{{ kubectl_src }}.sha256') }}"
   when: k9s_version not in k9s_existing_version.stdout or not k9s_exists.stat.exists
 
 - name: Check k9s version after install or upgrade
@@ -151,8 +157,10 @@
 - name: Show k9s version
   ansible.builtin.debug:
     msg:
-      - k9s version before: '{{ k9s_existing_version.stdout if k9s_exists.stat.exists else "N/A" }}'
-      - k9s version after: '{{ k9s_version_install.stdout if k9s_version_install.stdout is defined else "N/A" }}'
+      - k9s version before: >-
+            '{{ k9s_existing_version.stdout if k9s_exists.stat.exists else "N/A" }}'
+      - k9s version after: >-
+            '{{ k9s_version_install.stdout if k9s_version_install.stdout is defined else "N/A" }}'
 
 - name: Check RKE exist
   ansible.builtin.stat:
@@ -169,7 +177,8 @@
 - name: Show RKE version
   ansible.builtin.debug:
     msg:
-      - rke version before: '{{ rke_existing_version.stdout if rke_exists.stat.exists else "N/A" }}'
+      - rke version before: >-
+            '{{ rke_existing_version.stdout if rke_exists.stat.exists else "N/A" }}'
 
 - name: Install RKE if not exists
   ansible.builtin.get_url:
@@ -190,6 +199,7 @@
 - name: Show RKE version
   ansible.builtin.debug:
     msg:
-      - rke version before: '{{ rke_existing_version.stdout if rke_exists.stat.exists else "N/A" }}'
-      - rke version after: '{{ rke_version_install.stdout if rke_version_install.stdout is defined else "N/A" }}'
-
+      - rke version before: >-
+            '{{ rke_existing_version.stdout if rke_exists.stat.exists else "N/A" }}'
+      - rke version after: >-
+            '{{ rke_version_install.stdout if rke_version_install.stdout is defined else "N/A" }}'

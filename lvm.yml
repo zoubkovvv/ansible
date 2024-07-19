@@ -3,7 +3,6 @@
   hosts: rke
   gather_facts: true
   become: true
-  tasks:
 
   tasks:
     - name: Create physical volume
@@ -17,4 +16,3 @@
 
     - name: Resize filesystem
       command: resize2fs -p /dev/mapper/ubuntu--vg-ubuntu--lv
-
