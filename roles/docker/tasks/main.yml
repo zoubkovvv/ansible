@@ -1,6 +1,7 @@
 ---
 # tasks file for docker
-- import_tasks: ../../shared_tasks/print_messages.yml
+- name: Print messages
+  ansible.builtin.import_tasks: ../../shared_tasks/print_messages.yml
 
 - name: Uninstall old packages
   ansible.builtin.apt:
@@ -9,11 +10,13 @@
   tags:
     - docker
 
-- name: Create directory "{{ keyrings_folder }}" with permissions 0755
+- name: Create directory with permissions 0755 "{{ keyrings_folder }}"
   ansible.builtin.file:
     path: "{{ keyrings_folder }}"
     state: directory
     mode: '0755'
+    owner: root
+    group: root
   tags:
     - docker
 
@@ -21,6 +24,9 @@
   ansible.builtin.get_url:
     url: "{{ docker_url }}/gpg"
     dest: "{{ keyrings_folder }}/docker.asc"
+    mode: '0644'
+    owner: root
+    group: root
   tags:
     - docker
 
@@ -78,4 +84,4 @@
     - docker
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

@@ -1,9 +1,10 @@
 ---
 # tasks file for elastic
-- import_tasks: ../../shared_tasks/print_messages.yaml
+- name: Print messages
+  ansible.builtin.import_tasks: ../../shared_tasks/print_messages.yaml
 
 - name: Set vm.max_map_count
-  ansible.builtin.sysctl:
+  ansible.posix.sysctl:
     name: "vm.max_map_count"
     value: "262144"
     sysctl_set: true
@@ -17,6 +18,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
+    owner: root
+    group: root
     mode: '0777'
   loop:
     - "{{ docker_directory }}"

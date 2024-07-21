@@ -1,5 +1,5 @@
 version: '3.8'
-
+services:
   cadvisor:
     container_name: cadvisor
     image: gcr.io/cadvisor/cadvisor:v0.49.1
@@ -22,4 +22,3 @@ version: '3.8'
       options:
         max-size: "200k"
         max-file: 10
-

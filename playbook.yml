@@ -13,7 +13,7 @@
 
   tasks:
     - name: Include roles based on conditions
-      include_role:
+      ansible.builtin.include_role:
         name: "{{ role_item.key }}"
       loop: "{{ roles_to_run | dict2items }}"
       loop_control:

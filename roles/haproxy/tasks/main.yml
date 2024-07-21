@@ -12,7 +12,8 @@
 - name: Install HAProxy
   ansible.builtin.apt:
     name: haproxy
-    state: latest 
+    state: latest
+    only_upgrade: true
     update_cache: true
   notify: Restart HAProxy
   tags:

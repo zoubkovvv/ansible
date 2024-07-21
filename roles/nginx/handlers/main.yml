@@ -1,5 +1,5 @@
 ---
-# handlers file for nginx role 
+# handlers file for nginx role
 - name: Restart nginx
   ansible.builtin.systemd:
     name: nginx

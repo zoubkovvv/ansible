@@ -6,13 +6,21 @@
 
   tasks:
     - name: Create physical volume
-      command: pvcreate /dev/sdb
+      ansible.builtin.command: pvcreate /dev/sdb
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
 
     - name: Extend volume group
-      command: vgextend ubuntu-vg /dev/sdb
+      ansible.builtin.command: vgextend ubuntu-vg /dev/sdb
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
 
     - name: Extend logical volume
-      command: lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+      ansible.builtin.command: lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.
 
     - name: Resize filesystem
-      command: resize2fs -p /dev/mapper/ubuntu--vg-ubuntu--lv
+      ansible.builtin.command: resize2fs -p /dev/mapper/ubuntu--vg-ubuntu--lv
+      register: my_output # <- Registers the command output.
+      changed_when: my_output.rc != 0 # <- Uses the return code to define when the task has changed.

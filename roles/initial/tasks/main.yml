@@ -57,7 +57,7 @@
     - Restart sshd
 
 - name: Add SSH key to the user's authorized_keys
-  ansible.builtin.authorized_key:
+  ansible.posix.authorized_key:
     user: "{{ ansible_user }}"
     key: "{{ ansible_public_key }}"
     state: present
@@ -73,9 +73,9 @@
     - initial_role
     - firewall
 
-- name: Set timezone to "{{ timezone  }}"
-  ansible.builtin.timezone:
-    name: "{{ timezone  }}"
+- name: Set timezone to "{{ timezone }}"
+  community.general.timezone:
+    name: "{{ timezone }}"
   tags:
     - initial_role
     - set_timezone
@@ -101,6 +101,7 @@
   ansible.builtin.apt:
     name: "{{ useful_packages }}"
     state: latest
+    only_upgrade: true
   tags:
     - initial_role
 
@@ -136,7 +137,6 @@
   ansible.builtin.lineinfile:
     path: /etc/hostname
     line: "{{ inventory_hostname }}"
-    create: true
   tags:
     - initial_role
     - set_hostname
@@ -146,7 +146,6 @@
     path: /etc/hosts
     regexp: '^127\.0\.1\.1'
     line: "127.0.1.1 {{ inventory_hostname }}"
-    create: true
   tags:
     - initial_role
     - set_hostname
@@ -161,7 +160,7 @@
   loop: "{{ groups['all'] }}"
 
 - name: Check if reboot required
-  stat:
+  ansible.builtin.stat:
     path: /var/run/reboot-required
   register: reboot_required_file
 

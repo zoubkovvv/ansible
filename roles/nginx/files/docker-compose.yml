@@ -1,4 +1,4 @@
-version: '3.8'
+services:
   nginx-prometheus-exporter:
     image: nginx/nginx-prometheus-exporter:1.1.0
     ports:
@@ -27,4 +27,3 @@ version: '3.8'
       options:
         max-size: {{ docker_log_size }}
         max-file: {{ docker_log_file }}
-
