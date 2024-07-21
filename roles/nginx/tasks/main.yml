@@ -1,0 +1,34 @@
+---
+# Tasks for nginx role
+- name: Print messages
+  ansible.builtin.import_tasks: ../../../shared_tasks/print_messages.yml
+
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+  notify: Restart nginx
+  tags:
+    - "{{ app }}"
+
+- name: Configure nginx.cfg file
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+    backup: true
+  notify: Restart nginx
+  tags:
+    - "{{ app }}"
+
+- name: Check nginx is active
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+  notify: Restart nginx
+  tags:
+    - "{{ app }}"

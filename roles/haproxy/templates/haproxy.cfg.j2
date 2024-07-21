@@ -21,14 +21,11 @@ defaults
     mode    http
     option  httplog
     option  dontlognull
-    timeout connect 5000
-    timeout client  50000
-    timeout server  50000
-#    timeout connect 30s
-#    timeout client  300s
-#    timeout server  300s
-#    timeout http-request 300s
-#    timeout http-keep-alive 300s
+    timeout connect 30s
+    timeout client  300s
+    timeout server  300s
+    timeout http-request 300s
+    timeout http-keep-alive 300s
     errorfile 400 /etc/haproxy/errors/400.http
     errorfile 403 /etc/haproxy/errors/403.http
     errorfile 408 /etc/haproxy/errors/408.http
@@ -53,51 +50,39 @@ listen stats
 # Frontends
 ###############################################################################
 
-frontend rancher_cluster
+frontend home.lab
     bind 0.0.0.0:80
     option forwardfor
 
     acl acl_rancher_cluster hdr_reg(host) -i rancher.home.lab
     use_backend rancher_cluster if acl_rancher_cluster
 
-    acl acl_cluster hdr_reg(host) -i www.home.lab
-    acl acl_cluster hdr_reg(host) -i nginx.home.lab
+    acl acl_cluster hdr_reg(host) -i api.home.lab
     use_backend cluster if acl_cluster
 
+    acl acl_web hdr_reg(host) -i www.home.lab
+    use_backend web if acl_web
+
     default_backend cluster
+
+frontend prometheus
+  bind *:8405
+  mode http
+  http-request use-service prometheus-exporter if { path /metrics }
+  no log
 
 ###############################################################################
 # Backends
 ###############################################################################
-
-#backend rancher_cluster
-#    balance roundrobin
-#    option httpchk
-#    http-check send meth GET  uri /healthz
-
-#    server rke-cluster-01 192.168.0.11:80 check fall 3 rise 2
-#    server rke-cluster-02 192.168.0.12:80 check fall 3 rise 2
-#    server rke-cluster-03 192.168.0.13:80 check fall 3 rise 2
-
-###############################################################################
-
-#backend cluster
-#    balance roundrobin
-#    option httpchk
-#    http-check send meth GET  uri /healthz
-
-#    server rke-worker-01 192.168.0.211:80 check fall 3 rise 2
-#    server rke-worker-02 192.168.0.212:80 check fall 3 rise 2
-
 
 backend rancher_cluster
     balance roundrobin
     option httpchk
     http-check send meth GET uri /healthz
 
-    {% for host in groups['rancher_cluster'] %}
-    server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
-    {% endfor %}
+{% for host in groups['rancher_cluster'] %}
+server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
+{% endfor %}
 
 ###############################################################################
 
@@ -106,6 +91,18 @@ backend cluster
     option httpchk
     http-check send meth GET uri /healthz
 
-    {% for host in groups['cluster_worker'] %}
-    server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
-    {% endfor %}
+{% for host in groups['cluster_worker'] %}
+server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
+{% endfor %}
+
+###############################################################################
+
+backend web
+    balance roundrobin
+    option httpchk
+    http-check send meth GET uri /
+
+{% for host in groups['web'] %}
+server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
+{% endfor %}
+

@@ -1,5 +1,5 @@
 ---
-# handlers file for ansible-role-otc-server-common
+# handlers file for haproxy role
 - name: Restart HAProxy
   ansible.builtin.systemd:
     name: haproxy

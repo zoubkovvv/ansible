@@ -1,0 +1,23 @@
+---
+# playbook.yml
+- name: Playbook for running different roles
+  hosts: lb 
+  become: true
+  vars:
+    roles_to_run:
+      initial: true
+    become_pass: "{{ ansible_become_password }}"
+  vars_files:
+    - credentials.yml
+
+  tasks:
+    - name: Include roles based on conditions
+      include_role:
+        name: "{{ role_item.key }}"
+      loop: "{{ roles_to_run | dict2items }}"
+      loop_control:
+        loop_var: role_item
+      vars:
+        app: "{{ role_item.key }}"
+        disable_swap: true
+      when: role_item.value

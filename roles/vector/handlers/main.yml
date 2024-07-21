@@ -1,5 +1,5 @@
 ---
-# handlers file for docker
+# handlers file for vector role
 - name: Restart Docker Services
   community.docker.docker_compose_v2:
     project_src: "{{ docker_directory }}"

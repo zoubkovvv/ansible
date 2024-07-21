@@ -158,7 +158,15 @@
     regexp: "^{{ hostvars[item].ansible_host }} "
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     backup: true
-  loop: "{{ groups['rke'] }}"
+  loop: "{{ groups['all'] }}"
 
-- name: Flush handlers
-  meta: flush_handlers
+- name: Check if reboot required
+  stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+
+- name: Reboot a machine
+  ansible.builtin.reboot:
+    reboot_timeout: 30
+    msg: "Rebooting machine in 5 seconds"
+  when: reboot_required_file.stat.exists

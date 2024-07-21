@@ -19,7 +19,7 @@
 
 - name: Template configuration files
   ansible.builtin.template:
-    src: "templates/{{ docker_compose }}.j2"
+    src: "{{ docker_compose }}.j2"
     dest: "{{ docker_directory }}/{{ docker_compose }}"
     owner: root
     group: root

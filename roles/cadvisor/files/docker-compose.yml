@@ -1,0 +1,25 @@
+version: '3.8'
+
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    restart: always
+    mem_limit: 256m
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    command: "--store_container_labels=false"
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    ports:
+      - '9010:8080'
+    privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: 10
+

@@ -6,26 +6,35 @@
 - name: Add HAProxy stable repository from PPA and install its signing key on Ubuntu target
   ansible.builtin.apt_repository:
     repo: ppa:vbernat/haproxy-2.6
+  tags:
+    - "{{ app }}"
 
 - name: Install HAProxy
   ansible.builtin.apt:
     name: haproxy
-    state: present
+    state: latest 
     update_cache: true
   notify: Restart HAProxy
+  tags:
+    - "{{ app }}"
 
 - name: Configure haproxy.cfg file
   ansible.builtin.template:
-    src: templates/haproxy.cfg.j2
+    src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
     owner: root
     group: root
     mode: '0644'
     backup: true
   notify: Restart HAProxy
+  tags:
+    - "{{ app }}"
 
-- name: HAProxy service start
-  ansible.builtin.service:
+- name: Check HAProxy is active
+  ansible.builtin.systemd:
     name: haproxy
-    state: restarted
+    state: started
+    enabled: true
   notify: Restart HAProxy
+  tags:
+    - "{{ app }}"
