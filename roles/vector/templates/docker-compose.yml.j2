@@ -1,0 +1,22 @@
+services:
+  {{ docker_app }}:
+    image: {{ docker_image }} 
+    container_name: {{ docker_app }}
+    networks:
+      - {{ docker_app }}
+    ports:
+      - "8686:8686"
+    volumes:
+      - {{ vector_cfg_volume_src }}:{{ vector_cfg_volume_dst }}:ro
+    command: ["--config", "/etc/vector/vector.yml"]
+    restart: always
+    mem_limit: {{ docker_mem_limit }}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "{{ docker_log_size }}"
+        max-file: "{{ docker_log_file }}"
+
+networks:
+  {{ docker_app }}:
+    driver: bridge

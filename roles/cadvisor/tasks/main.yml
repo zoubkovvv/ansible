@@ -1,21 +1,19 @@
 ---
-# tasks for vector
-- name: Print startup messages
-  ansible.builtin.debug:
-    msg: "{{ item }}"
-  loop:
-    - "{{ initial_message }}"
-    - "{{ startup_message }}"
-  tags:
-    - vector
+# tasks file for elastic
+- name: Print messages
+  ansible.builtin.import_tasks: ../../shared_tasks/print_messages.yaml
 
-- name: Create directory with permissions 0777
+- name: Create multiple directories with permissions 0777
   ansible.builtin.file:
-    path: "{{ docker_directory }}"
+    path: "{{ item }}"
     state: directory
-    mode: "0777"
+    owner: root
+    group: root
+    mode: '0777'
+  loop:
+    - "{{ docker_directory }}"
   tags:
-    - vector
+    - cadvisor
 
 - name: Template configuration files
   ansible.builtin.template:
@@ -23,21 +21,10 @@
     dest: "{{ docker_directory }}/{{ docker_compose }}"
     owner: root
     group: root
-    mode: "0644"
-  notify: Restart Docker Services
-  tags:
-    - vector
-
-- name: Copy configuration files
-  ansible.builtin.copy:
-    src: "vector.yml"
-    dest: "{{ docker_directory }}/vector.yml"
-    owner: root
-    group: root
     mode: '0644'
   notify: Restart Docker Services
   tags:
-    - vector
+    - cadvisor
 
 - name: Create and start services using Docker Compose
   community.docker.docker_compose_v2:
@@ -45,11 +32,12 @@
     files:
       - "{{ docker_compose }}"
   register: output
+  notify: Restart Docker Services
   tags:
-    - "{{ app }}"
+    - cadvisor
 
 - name: Debug output
   ansible.builtin.debug:
     var: output
   tags:
-    - "{{ app }}"
+    - cadvisor

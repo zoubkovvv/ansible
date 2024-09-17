@@ -1,0 +1,12 @@
+---
+# users.yml
+- name: Ensure the user exists
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    state: present
+    create_home: true
+    groups: sudo
+    append: true
+  tags:
+    - initial_role

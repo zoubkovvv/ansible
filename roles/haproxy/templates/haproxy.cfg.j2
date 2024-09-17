@@ -17,15 +17,21 @@ global
     ssl-default-bind-options no-sslv3
 
 defaults
-    log     global
-    mode    http
-    option  httplog
-    option  dontlognull
-    timeout connect 30s
-    timeout client  300s
-    timeout server  300s
-    timeout http-request 300s
-    timeout http-keep-alive 300s
+    mode                    http
+    log                     global
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 1
+    timeout http-request    10s
+    timeout queue           20s
+    timeout connect         5s
+    timeout client          35s
+    timeout server          35s
+    timeout http-keep-alive 10s
+    timeout check           10s
     errorfile 400 /etc/haproxy/errors/400.http
     errorfile 403 /etc/haproxy/errors/403.http
     errorfile 408 /etc/haproxy/errors/408.http
@@ -38,13 +44,13 @@ defaults
 # Stats
 ###############################################################################
 listen stats
-  bind 0.0.0.0:81
-  mode http
-  stats enable
-  stats uri /stats
-  stats auth admin:admin
-  stats refresh 10s
-  stats admin if TRUE
+    bind 0.0.0.0:81
+    mode http
+    stats enable
+    stats uri /stats
+    stats auth admin:admin
+    stats refresh 10s
+    stats admin if TRUE
 
 ###############################################################################
 # Frontends
@@ -65,11 +71,21 @@ frontend home.lab
 
     default_backend cluster
 
+###############################################################################
+
 frontend prometheus
-  bind *:8405
-  mode http
-  http-request use-service prometheus-exporter if { path /metrics }
-  no log
+    bind *:8405
+    mode http
+    http-request use-service prometheus-exporter if { path /metrics }
+    no log
+
+###############################################################################
+
+frontend k8s-api
+    bind *:6443
+    mode tcp
+    option tcplog
+    default_backend k8s-api-backend
 
 ###############################################################################
 # Backends
@@ -106,3 +122,19 @@ backend web
 server {{ host }} {{ hostvars[host]['ansible_host'] }}:80 check fall 3 rise 2
 {% endfor %}
 
+###############################################################################
+
+backend k8s-api-backend
+    option httpchk
+    http-check connect ssl
+    http-check send meth GET uri /healthz
+    http-check expect status 200
+
+    mode tcp
+    balance     roundrobin   
+ 
+    {% for host in groups['k8s_master'] %}
+    server {{ host }} {{ hostvars[host]['ansible_host'] }}:6443 check verify none
+    {% endfor %}
+
+###############################################################################

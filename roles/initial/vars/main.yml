@@ -37,3 +37,5 @@ disable_swap: false
 timezone: Asia/Yekaterinburg
 journalctl_max_disk_usage: 1G
 enable_ssh_tcp_forwarding: true
+sshd_config_file: /etc/ssh/sshd_config
+

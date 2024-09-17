@@ -1,12 +1,15 @@
 ---
 # playbook.yml
 - name: Playbook for running different roles
-  hosts: vm 
+  hosts: k8s
   become: true
   vars:
     roles_to_run:
       initial: true
-      docker: true
+      docker: false
+      vector: false
+      node-exporter: false
+      rke: false
     become_pass: "{{ ansible_become_password }}"
   vars_files:
     - credentials.yml
@@ -20,5 +23,5 @@
         loop_var: role_item
       vars:
         app: "{{ role_item.key }}"
-        disable_swap: false
+        disable_swap: true
       when: role_item.value

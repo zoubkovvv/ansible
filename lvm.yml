@@ -1,6 +1,6 @@
 ---
 - name: Extend LVM Volume
-  hosts: rke
+  hosts: elastic_cluster
   gather_facts: true
   become: true
 
@@ -22,5 +22,5 @@
 
     - name: Resize filesystem
       ansible.builtin.command: resize2fs -p /dev/mapper/ubuntu--vg-ubuntu--lv
-      register: my_output.
+      register: my_output
       changed_when: my_output.rc != 0

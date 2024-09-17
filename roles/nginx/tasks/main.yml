@@ -12,6 +12,56 @@
   tags:
     - "{{ app }}"
 
+- name: Disable the default site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify:
+    - Restart nginx
+  tags:
+    - "{{ app }}"
+
+- name: Copy configuration files
+  ansible.builtin.copy:
+    src: www.home.lab
+    dest: /etc/nginx/sites-enabled/
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart nginx
+
+
+- name: Create directory with permissions 0777
+  ansible.builtin.file:
+    path: /opt/nginx_exporter
+    state: directory
+    mode: "0777"
+
+- name: Copy configuration file
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: /opt/nginx_exporter/docker-compose.yml
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Docker Services
+
+- name: Create and start services using Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: /opt/nginx_exporter 
+    files:
+      - docker-compose.yml
+  register: output
+  tags:
+    - "{{ app }}"
+  notify: Restart Docker Services
+
+- name: Debug output
+  ansible.builtin.debug:
+    var: output
+  tags:
+    - "{{ app }}"
+
 - name: Configure nginx.cfg file
   ansible.builtin.template:
     src: index.html.j2
@@ -25,7 +75,7 @@
     - "{{ app }}"
 
 - name: Check nginx is active
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: nginx
     state: started
     enabled: true

@@ -1,10 +1,9 @@
----
 services:
-  cadvisor:
-    container_name: cadvisor
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
+  {{ docker_app }}:
+    container_name: {{ docker_app }}
+    image: {{ docker_image }}
     restart: always
-    mem_limit: 256m
+    mem_limit: {{ docker_mem_limit }}
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -20,5 +19,9 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "200k"
-        max-file: 10
+        max-size: {{ docker_log_size }}
+        max-file: {{ docker_log_file }}
+
+networks:
+  {{ docker_app }}:
+    driver: bridge

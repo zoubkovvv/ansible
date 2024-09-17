@@ -1,10 +1,9 @@
 ---
-# vars file for elastic
+# vars file for nginx
 docker_install: true
 docker_compose: "docker-compose.yml"
 docker_app: "{{ app }}"
 docker_directory: "/opt/{{ app }}"
-docker_image: bitnami/elasticsearch:7.17.21
 docker_mem_limit: 1500m
 docker_log_size: "200k"
 docker_log_file: "10"

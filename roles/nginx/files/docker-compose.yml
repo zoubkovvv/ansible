@@ -2,29 +2,7 @@
 services:
   nginx-prometheus-exporter:
     image: nginx/nginx-prometheus-exporter:1.1.0
+    restart: always
     ports:
       - "9113:9113"
-    command: ["--nginx.scrape-uri=http://localhost:80/stub_status"]
-
-  cadvisor:
-    container_name: cadvisor
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    restart: always
-    mem_limit: 256m
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    command: "--store_container_labels=false"
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    ports:
-      - '9010:8080'
-    privileged: true
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "{{ docker_log_size }}"
-        max-file: "{{ docker_log_file }}"
+    command: ["--nginx.scrape-uri=http://localhost:80/status"]

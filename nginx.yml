@@ -1,12 +1,11 @@
 ---
-# playbook.yml
-- name: Playbook for running different roles
+# nginx.yml
+- name: Playbook for running nginx role
   hosts: web
   become: true
   vars:
     roles_to_run:
       initial: true
-      docker: true
       vector: true
       node-exporter: true
       nginx: true
@@ -15,13 +14,13 @@
     - credentials.yml
 
   tasks:
-    - name: Include roles based on conditions
-      ansible.builtin.include_role:
-        name: "{{ role_item.key }}"
-      loop: "{{ roles_to_run | dict2items }}"
-      loop_control:
-        loop_var: role_item
-      vars:
-        app: "{{ role_item.key }}"
-        disable_swap: false
-      when: role_item.value
+   - name: Include roles based on conditions
+     ansible.builtin.include_role:
+       name: "{{ role_item.key }}"
+     loop: "{{ roles_to_run | dict2items }}"
+     loop_control:
+       loop_var: role_item
+     vars:
+       app: "{{ role_item.key }}"
+       disable_swap: false
+     when: role_item.value

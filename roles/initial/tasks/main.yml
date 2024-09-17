@@ -1,68 +1,17 @@
 ---
+# main.yml
 # Tasks for initial role
 - name: Print messages
   ansible.builtin.import_tasks: ../../../shared_tasks/print_messages.yml
 
-- name: Ensure the user exists
-  ansible.builtin.user:
-    name: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    state: present
-    create_home: true
-    groups: sudo
-    append: true
-  tags:
-    - initial_role
+- name: Users tasks
+  ansible.builtin.import_tasks: users.yml
 
-- name: Configure sudoers to enable users to execute commands
-  community.general.sudoers:
-    name: "{{ ansible_user }}"
-    user: "{{ ansible_user }}"
-    nopassword: true
-    runas: 'ALL'
-    commands: 'ALL'
-    validation: required
-  tags:
-    - initial_role
-    - sudoers
+- name: Sudo tasks
+  ansible.builtin.import_tasks: sudo.yml
 
-- name: Start ssh service
-  ansible.builtin.systemd:
-    name: sshd
-    enabled: true
-    state: started
-
-- name: Disable root login
-  ansible.builtin.replace:
-    path: /etc/ssh/sshd_config
-    regexp: '^PermitRootLogin.*'
-    replace: 'PermitRootLogin no'
-
-- name: Enable SSH forwarding
-  ansible.builtin.replace:
-    path: /etc/ssh/sshd_config
-    regexp: '^AllowTcpForwarding.*'
-    replace: 'AllowTcpForwarding yes'
-    backup: true
-  when: enable_ssh_tcp_forwarding|bool
-  notify:
-    - Restart sshd
-
-- name: Disable password login
-  ansible.builtin.replace:
-    path: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication.*'
-    replace: 'PasswordAuthentication no'
-  notify:
-    - Restart sshd
-
-- name: Add SSH key to the user's authorized_keys
-  ansible.posix.authorized_key:
-    user: "{{ ansible_user }}"
-    key: "{{ ansible_public_key }}"
-    state: present
-  tags:
-    - initial_role
+- name: SSH tasks
+  ansible.builtin.import_tasks: ssh.yml
 
 - name: Stop UFW service
   ansible.builtin.service:
@@ -101,7 +50,6 @@
   ansible.builtin.apt:
     name: "{{ useful_packages }}"
     state: latest
-    only_upgrade: true
   tags:
     - initial_role
 
@@ -127,7 +75,7 @@
 
 - name: Set hostname
   ansible.builtin.hostname:
-    name: "{{ inventory_hostname }}"
+    name: "{{ inventory_hostname }}.{{ domain_name }}"
     use: systemd
   tags:
     - initial_role
@@ -136,7 +84,8 @@
 - name: Ensure /etc/hostname is updated
   ansible.builtin.lineinfile:
     path: /etc/hostname
-    line: "{{ inventory_hostname }}"
+    line: "{{ inventory_hostname }}.{{ domain_name }}"
+    backup: true
   tags:
     - initial_role
     - set_hostname
@@ -145,19 +94,20 @@
   ansible.builtin.lineinfile:
     path: /etc/hosts
     regexp: '^127\.0\.1\.1'
-    line: "127.0.1.1 {{ inventory_hostname }}"
+    line: "127.0.1.1 {{ inventory_hostname }} {{ inventory_hostname }}.{{ domain_name }}"
+    backup: true
   tags:
     - initial_role
     - set_hostname
 
-- name: Add or update /etc/hosts entry
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    state: present
-    regexp: "^{{ hostvars[item].ansible_host }} "
-    line: "{{ hostvars[item].ansible_host }} {{ item }}"
-    backup: true
-  loop: "{{ groups['all'] }}"
+#- name: Add or update /etc/hosts entry
+#  ansible.builtin.lineinfile:
+#    path: /etc/hosts
+#    state: present
+#    regexp: "^{{ hostvars[item].ansible_host }} "
+#    line: "{{ hostvars[item].ansible_host }} {{ item }}"
+#    backup: true
+#  loop: "{{ groups['all'] }}"
 
 - name: Check if reboot required
   ansible.builtin.stat:

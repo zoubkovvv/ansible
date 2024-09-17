@@ -4,3 +4,8 @@
   ansible.builtin.systemd:
     name: nginx
     state: restarted
+
+- name: Restart Docker Services
+  community.docker.docker_compose_v2:
+    project_src: /opt/nginx_exporter
+    state: restarted

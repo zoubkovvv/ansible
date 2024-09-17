@@ -1,6 +1,7 @@
 ---
 # vars file for node-exporter
-docker_compose: "docker-compose.yaml"
+docker_install: true
+docker_compose: "docker-compose.yml"
 docker_app: "{{ app }}"
 docker_directory: "/opt/{{ app }}"
 docker_image: "prom/{{ app }}:v1.8.1"

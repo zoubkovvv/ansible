@@ -1,0 +1,14 @@
+---
+# sudo.yml
+- name: Configure sudoers to enable users to execute commands
+  community.general.sudoers:
+    name: "{{ ansible_user }}"
+    user: "{{ ansible_user }}"
+    nopassword: true
+    runas: 'ALL'
+    commands: 'ALL'
+    validation: required
+  tags:
+    - initial_role
+    - sudoers
+

@@ -1,0 +1,53 @@
+---
+# ssh.yml
+- name: Start SSH service
+  ansible.builtin.systemd:
+    name: sshd
+    enabled: true
+    state: started
+  notify:
+    - Restart sshd
+
+- name: Disable root login
+  ansible.builtin.lineinfile:
+    path: "{{ sshd_config_file }}"
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+    backup: true
+  notify:
+    - Restart sshd
+
+- name: Enforce SSH key passphrases
+  ansible.builtin.lineinfile:
+    path: "{{ sshd_config_file }}"
+    regexp: '^#PermitEmptyPasswords'
+    line: 'PermitEmptyPasswords no'
+    backup: true
+  notify: 
+    - Restart sshd
+
+- name: Enable SSH forwarding
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^AllowTcpForwarding.*'
+    replace: 'AllowTcpForwarding yes'
+    backup: true
+  when: enable_ssh_tcp_forwarding|bool
+  notify:
+    - Restart sshd
+
+- name: Disable password login
+  ansible.builtin.replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication.*'
+    replace: 'PasswordAuthentication no'
+  notify:
+    - Restart sshd
+
+- name: Add SSH key to the user's authorized_keys
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ ansible_public_key }}"
+    state: present
+  tags:
+    - initial_role

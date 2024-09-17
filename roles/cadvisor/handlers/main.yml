@@ -1,6 +1,6 @@
 ---
-# handlers file for nginx role
-- name: Restart docker
-  ansible.builtin.systemd:
-    name: docker
+# handlers file for cadvisor role
+- name: Restart Docker Services
+  community.docker.docker_compose_v2:
+    project_src: "/opt/{{ app }}"
     state: restarted
