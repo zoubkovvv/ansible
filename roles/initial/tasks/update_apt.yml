@@ -1,0 +1,37 @@
+---
+# roles/initial/tasks/apt.yml
+# 
+- name: Apt update packages
+  block:
+    - name: Update apt cache if needed.
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install useful packages
+      ansible.builtin.apt:
+        name: "{{ useful_packages }}"
+        state: latest
+
+    - name: Uninstall useless packages
+      ansible.builtin.package:
+        name: "{{ useless_packages }}"
+        state: absent
+
+    - name: Update all packages
+      ansible.builtin.apt:
+        upgrade: dist
+        autoclean: true
+        autoremove: true
+        install_recommends: false
+        force_apt_get: true
+        update_cache: true
+      when: update_packages
+
+  tags:
+    - apt
+
+  rescue:
+    - name: Handle failure
+      debug:
+        msg: "One or more apt update tasks failed."

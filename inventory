@@ -14,7 +14,7 @@ rke-cluster-03 ansible_host=192.168.0.13
 [lb]
 haproxy ansible_host=192.168.0.254
 
-[vm]
+[victoria]
 vm ansible_host=192.168.0.35 domain_name=zoubkov.local
 
 [web]

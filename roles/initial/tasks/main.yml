@@ -13,6 +13,9 @@
 - name: SSH tasks
   ansible.builtin.import_tasks: ssh.yml
 
+- name: Update tasks
+  ansible.builtin.import_tasks: update_apt.yml
+
 - name: Stop UFW service
   ansible.builtin.service:
     name: ufw
@@ -41,38 +44,6 @@
     - initial_role
     - journalctl
 
-- name: Update apt cache if needed.
-  ansible.builtin.apt:
-    update_cache: true
-    cache_valid_time: 3600
-
-- name: Update package cache and install useful packages
-  ansible.builtin.apt:
-    name: "{{ useful_packages }}"
-    state: latest
-  tags:
-    - initial_role
-
-- name: Uninstall useless packages
-  ansible.builtin.package:
-    name: "{{ useless_packages }}"
-    state: absent
-  tags:
-    - initial_role
-    - uninstall_packages
-
-- name: Update all packages
-  ansible.builtin.apt:
-    upgrade: dist
-    autoclean: true
-    autoremove: true
-    install_recommends: false
-    force_apt_get: true
-    update_cache: true
-  tags:
-    - initial_role
-  when: update_packages
-
 - name: Set hostname
   ansible.builtin.hostname:
     name: "{{ inventory_hostname }}.{{ domain_name }}"
@@ -100,22 +71,14 @@
     - initial_role
     - set_hostname
 
-#- name: Add or update /etc/hosts entry
-#  ansible.builtin.lineinfile:
-#    path: /etc/hosts
-#    state: present
-#    regexp: "^{{ hostvars[item].ansible_host }} "
-#    line: "{{ hostvars[item].ansible_host }} {{ item }}"
-#    backup: true
-#  loop: "{{ groups['all'] }}"
+# - name: Add or update /etc/hosts entry
+#   ansible.builtin.lineinfile:
+#     path: /etc/hosts
+#     state: present
+#     regexp: "^{{ hostvars[item].ansible_host }} "
+#     line: "{{ hostvars[item].ansible_host }} {{ item }}"
+#     backup: true
+#   loop: "{{ groups['all'] }}"
 
-- name: Check if reboot required
-  ansible.builtin.stat:
-    path: /var/run/reboot-required
-  register: reboot_required_file
-
-- name: Reboot a machine
-  ansible.builtin.reboot:
-    reboot_timeout: 30
-    msg: "Rebooting machine in 5 seconds"
-  when: reboot_required_file.stat.exists
+- name: Reboot
+  ansible.builtin.import_tasks: reboot.yml

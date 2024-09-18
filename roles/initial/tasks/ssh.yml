@@ -1,53 +1,60 @@
 ---
-# ssh.yml
-- name: Start SSH service
-  ansible.builtin.systemd:
-    name: sshd
-    enabled: true
-    state: started
-  notify:
-    - Restart sshd
+# roles/initial/tasks/ssh.yml
+# ssh tasks for initial role
+- name: Manage SSH configuration and service
+  block:
+    - name: Start SSH service
+      ansible.builtin.systemd:
+        name: sshd
+        enabled: true
+        state: started
 
-- name: Disable root login
-  ansible.builtin.lineinfile:
-    path: "{{ sshd_config_file }}"
-    regexp: '^PermitRootLogin'
-    line: 'PermitRootLogin no'
-    backup: true
-  notify:
-    - Restart sshd
+    - name: Add SSH key to the user's authorized_keys
+      ansible.posix.authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ ansible_public_key }}"
+        state: present
 
-- name: Enforce SSH key passphrases
-  ansible.builtin.lineinfile:
-    path: "{{ sshd_config_file }}"
-    regexp: '^#PermitEmptyPasswords'
-    line: 'PermitEmptyPasswords no'
-    backup: true
-  notify: 
-    - Restart sshd
+    - name: Disable root login
+      ansible.builtin.lineinfile:
+        path: "{{ sshd_config_file }}"
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        backup: true
+        state: present
 
-- name: Enable SSH forwarding
-  ansible.builtin.replace:
-    path: /etc/ssh/sshd_config
-    regexp: '^AllowTcpForwarding.*'
-    replace: 'AllowTcpForwarding yes'
-    backup: true
-  when: enable_ssh_tcp_forwarding|bool
-  notify:
-    - Restart sshd
+    - name: Disable password login
+      ansible.builtin.lineinfile:
+        path: "{{ sshd_config_file }}"
+        regexp: '^PasswordAuthentication.*'
+        line: 'PasswordAuthentication no'
+        backup: true
+        state: present
 
-- name: Disable password login
-  ansible.builtin.replace:
-    path: /etc/ssh/sshd_config
-    regexp: '^PasswordAuthentication.*'
-    replace: 'PasswordAuthentication no'
-  notify:
-    - Restart sshd
+    - name: Enforce SSH key passphrases
+      ansible.builtin.lineinfile:
+        path: "{{ sshd_config_file }}"
+        regexp: '^PermitEmptyPasswords'
+        line: 'PermitEmptyPasswords no'
+        backup: true
+        state: present
 
-- name: Add SSH key to the user's authorized_keys
-  ansible.posix.authorized_key:
-    user: "{{ ansible_user }}"
-    key: "{{ ansible_public_key }}"
-    state: present
+    - name: Enable SSH TCP forwarding
+      ansible.builtin.lineinfile:
+        path: "{{ sshd_config_file }}"
+        regexp: '^AllowTcpForwarding'
+        line: 'AllowTcpForwarding yes'
+        backup: true
+        state: present
+      when: enable_ssh_tcp_forwarding | bool
+
   tags:
-    - initial_role
+    - ssh
+
+  notify:
+    - Restart sshd
+
+  rescue:
+    - name: Handle failure
+      debug:
+        msg: "One or more SSH configuration tasks failed."

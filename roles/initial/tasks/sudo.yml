@@ -1,5 +1,6 @@
 ---
-# sudo.yml
+# roles/initial/tasks/sudo.yml
+# sudo tasks for initial role
 - name: Configure sudoers to enable users to execute commands
   community.general.sudoers:
     name: "{{ ansible_user }}"
@@ -11,4 +12,3 @@
   tags:
     - initial_role
     - sudoers
-

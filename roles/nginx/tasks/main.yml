@@ -48,7 +48,7 @@
 
 - name: Create and start services using Docker Compose
   community.docker.docker_compose_v2:
-    project_src: /opt/nginx_exporter 
+    project_src: /opt/nginx_exporter
     files:
       - docker-compose.yml
   register: output

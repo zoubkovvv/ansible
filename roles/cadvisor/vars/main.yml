@@ -4,7 +4,7 @@ docker_install: true
 docker_compose: "docker-compose.yml"
 docker_app: "{{ app }}"
 docker_directory: "/opt/{{ app }}"
-docker_image: gcr.io/cadvisor/cadvisor:v0.49.1 
+docker_image: gcr.io/cadvisor/cadvisor:v0.49.1
 docker_mem_limit: 256m
 docker_log_size: "200k"
 docker_log_file: "10"

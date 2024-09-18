@@ -1,5 +1,6 @@
 ---
-# users.yml
+# roles/initial/tasks/users.yml
+# user's tasks for initial role
 - name: Ensure the user exists
   ansible.builtin.user:
     name: "{{ ansible_user }}"
