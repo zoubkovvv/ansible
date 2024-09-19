@@ -10,5 +10,4 @@
     commands: 'ALL'
     validation: required
   tags:
-    - initial_role
-    - sudoers
+    - sudo

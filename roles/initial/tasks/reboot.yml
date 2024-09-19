@@ -1,7 +1,6 @@
 ---
-# reboot.yml
+# roles/initial/tasks/reboot.yml
 # Tasks for reboot
-
 - name: Check if reboot required
   ansible.builtin.stat:
     path: /var/run/reboot-required

@@ -1,5 +1,5 @@
 ---
-# main.yml
+# roles/initial/tasks/main.yml
 # Tasks for initial role
 - name: Print messages
   ansible.builtin.import_tasks: ../../../shared_tasks/print_messages.yml
