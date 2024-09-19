@@ -2,7 +2,13 @@
 # roles/initial/vars/main.yml
 ansible_user: "zoubkovvv"
 ansible_public_key: "{{ lookup('file', 'files/id_rsa.pub') }}"
-rke: false
+disable_swap: false
+enable_ssh_tcp_forwarding: true
+journalctl_max_disk_usage: 1G
+sshd_config_file: /etc/ssh/sshd_config
+timezone: Asia/Yekaterinburg
+update_packages: true
+#rke: false
 useful_packages:
   - apt-transport-https
   - bash-completion
@@ -32,9 +38,3 @@ useless_packages:
   - apport
 # - cloud-init
 # - snapd
-update_packages: true
-disable_swap: false
-timezone: Asia/Yekaterinburg
-journalctl_max_disk_usage: 1G
-enable_ssh_tcp_forwarding: true
-sshd_config_file: /etc/ssh/sshd_config
