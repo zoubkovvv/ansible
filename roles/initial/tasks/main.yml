@@ -45,40 +45,7 @@
     - journalctl
 
 - name: Set hostname
-  ansible.builtin.hostname:
-    name: "{{ inventory_hostname }}.{{ domain_name }}"
-    use: systemd
-  tags:
-    - initial_role
-    - set_hostname
-
-- name: Ensure /etc/hostname is updated
-  ansible.builtin.lineinfile:
-    path: /etc/hostname
-    line: "{{ inventory_hostname }}.{{ domain_name }}"
-    backup: true
-  tags:
-    - initial_role
-    - set_hostname
-
-- name: Ensure /etc/hosts is updated
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    regexp: '^127\.0\.1\.1'
-    line: "127.0.1.1 {{ inventory_hostname }} {{ inventory_hostname }}.{{ domain_name }}"
-    backup: true
-  tags:
-    - initial_role
-    - set_hostname
-
-# - name: Add or update /etc/hosts entry
-#   ansible.builtin.lineinfile:
-#     path: /etc/hosts
-#     state: present
-#     regexp: "^{{ hostvars[item].ansible_host }} "
-#     line: "{{ hostvars[item].ansible_host }} {{ item }}"
-#     backup: true
-#   loop: "{{ groups['all'] }}"
+  ansible.builtin.import_tasks: hostname.yml
 
 - name: Reboot
   ansible.builtin.import_tasks: reboot.yml
