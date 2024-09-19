@@ -11,4 +11,3 @@
     reboot_timeout: 30
     msg: "Rebooting machine in 5 seconds"
   when: reboot_required_file.stat.exists
-
