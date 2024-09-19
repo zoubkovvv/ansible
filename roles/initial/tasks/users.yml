@@ -10,4 +10,4 @@
     groups: sudo
     append: true
   tags:
-    - initial_role
+    - users

@@ -1,29 +1,33 @@
-- name: Set hostname
-  ansible.builtin.hostname:
-    name: "{{ inventory_hostname }}.{{ domain_name }}"
-    use: systemd
-  tags:
-    - initial_role
-    - set_hostname
+---
+# roles/initial/tasks/hostname.yml
+# host's tasks for initial role
+- name: Tasks with hostname
+  block:
+    - name: Set hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}.{{ domain_name }}"
+        use: systemd
 
-- name: Ensure /etc/hostname is updated
-  ansible.builtin.lineinfile:
-    path: /etc/hostname
-    line: "{{ inventory_hostname }}.{{ domain_name }}"
-    backup: true
-  tags:
-    - initial_role
-    - set_hostname
+    - name: Ensure /etc/hostname is updated
+      ansible.builtin.lineinfile:
+        path: /etc/hostname
+        line: "{{ inventory_hostname }}.{{ domain_name }}"
+        backup: true
 
-- name: Ensure /etc/hosts is updated
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    regexp: '^127\.0\.1\.1'
-    line: "127.0.1.1 {{ inventory_hostname }} {{ inventory_hostname }}.{{ domain_name }}"
-    backup: true
+    - name: Ensure /etc/hosts is updated
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: '^127\.0\.1\.1'
+        line: "127.0.1.1 {{ inventory_hostname }} {{ inventory_hostname }}.{{ domain_name }}"
+        backup: true
+
   tags:
-    - initial_role
-    - set_hostname
+    - hostname
+
+  rescue:
+    - name: Handle failure
+      debug:
+        msg: "One or more apt update tasks failed."
 
 # - name: Add or update /etc/hosts entry
 #   ansible.builtin.lineinfile:
@@ -32,5 +36,4 @@
 #     regexp: "^{{ hostvars[item].ansible_host }} "
 #     line: "{{ hostvars[item].ansible_host }} {{ item }}"
 #     backup: true
-#   loop: "{{ groups['all'] }}"
-
+#   loop: "{{ groups['all'] }}"  
