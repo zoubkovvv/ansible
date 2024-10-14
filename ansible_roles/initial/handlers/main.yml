@@ -1,12 +1,18 @@
 ---
 # roles/initial/handlers/main.yml
-# handlers file for initial role
+# handlers for initial role
 - name: Restart sshd
   ansible.builtin.systemd:
+    daemon_reload: true
     name: sshd
     state: restarted
+    when:
+    - not ansible_check_mode
 
 - name: Restart journald
   ansible.builtin.systemd:
+    daemon_reload: true
     name: systemd-journald
     state: restarted
+    when:
+    - not ansible_check_mode

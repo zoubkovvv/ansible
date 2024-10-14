@@ -1,0 +1,26 @@
+---
+# roles/node_exporter/tasks/main.yml
+# Tasks for node_exporter role
+- name: Print messages
+  ansible.builtin.import_tasks: ../../../shared_tasks/print_messages.yml
+
+- name: Install Node Exporter using systemd
+  ansible.builtin.import_tasks: node_exporter_systemd.yml
+  when: not node_exporter_docker_install
+
+- name: Install Node Exporter using Docker
+  ansible.builtin.import_tasks: node_exporter_docker.yml
+  when: node_exporter_docker_install
+
+- name: Flush handlers before checking
+  ansible.builtin.meta: flush_handlers
+
+- name: Check node_exporter emits metrics
+  ansible.builtin.uri:
+    url: "http://{{ node_exporter_check_itself_url }}:{{ node_exporter_port }}/metrics"
+    method: GET
+    status_code: 200
+  register: _result
+  until: _result.status == 200
+  retries: 5 # 5 * 5 seconds = 25seconds
+  delay: 5 # Every 5 seconds

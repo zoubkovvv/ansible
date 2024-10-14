@@ -1,6 +1,0 @@
----
-# handlers file for node-exporter role
-- name: Restart Docker Services
-  community.docker.docker_compose_v2:
-    project_src: /opt/{{ docker_app }}
-    state: restarted

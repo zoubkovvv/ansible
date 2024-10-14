@@ -84,7 +84,7 @@
 
 - name: Install kubectl if not exists
   ansible.builtin.get_url:
-    url: "{{ kubectl_src}}"
+    url: "{{ kubectl_src }}"
     dest: /usr/local/bin/kubectl
     owner: root
     group: root

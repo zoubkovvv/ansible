@@ -1,0 +1,81 @@
+---
+# tasks file for standalone node-exporter
+#- name: Print startup messages
+#  ansible.builtin.debug:
+#    msg: "{{ item }}"
+#  loop:
+#    - "{{ initial_message }}"
+#    - "{{ startup_message }}"
+#  tags:
+#    - "{{ app }}"
+
+- name: Check if node_exporter is installed
+  ansible.builtin.stat:
+    path: "{{ node_exporter_binary_install_dir }}/node_exporter"
+  register: __node_exporter_is_installed
+#  check_mode: false
+  tags:
+    - node_exporter_install
+
+- name: Gather currently installed node_exporter version
+  ansible.builtin.command: "{{ node_exporter_binary_install_dir }}/node_exporter --version"
+  changed_when: false
+  register: __node_exporter_current_version_output
+#  check_mode: false
+  when: __node_exporter_is_installed.stat.exists
+  tags:
+    - node_exporter_install
+
+- name: Print version
+  ansible.builtin.debug:
+    msg: "{{ __node_exporter_current_version_output }}"
+
+- name: Template the node_exporter systemd service file
+  ansible.builtin.template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart node_exporter
+
+- name: Create node_exporter config directory
+  ansible.builtin.file:
+    path: "/etc/node_exporter"
+    state: directory
+    owner: root
+    group: root
+    mode: u+rwX,g+rwX,o=rX
+
+- name: Create user and group
+  ansible.builtin.include_tasks: preinstall.yml
+
+- name: Install node-exporter if not exists
+  ansible.builtin.get_url:
+    url: "{{ node_exporter_url }}"
+    dest: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    #checksum: "sha256:{{ __node_exporter_checksum }}"
+    #dest: "{{ node_exporter_path }}/{{ node_exporter_bin }}"
+#    owner: "{{ node_exporter_user }}"
+#    group: "{{ node_exporter_group }}"
+    mode: 0644
+    validate_certs: true
+    delegate_to: localhost
+  #when: kubectl_version not in kubectl_existing_version.stdout or not kubectl_exists.stat.exists
+
+- name: Unarchive node-exporter if not exists
+  ansible.builtin.unarchive:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: /tmp
+    creates: /tmp/node_exporter
+  delegate_to: localhost
+
+- name: Check node_exporter is enabled on boot
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: node-exporter
+    enabled: true
+    state: started
+  tags:
+    - "{{ app }}"
+

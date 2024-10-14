@@ -1,13 +1,13 @@
 ---
 # vars file for docker
-arch_mapping:  # Map {{ ansible_architecture }} names to Docker's arch names
+docker_arch_mapping:  # Map {{ ansible_architecture }} names to Docker's arch names
   x86_64: amd64
   aarch64: arm64
 docker_user: zoubkovvv
 docker_url: https://download.docker.com/linux/ubuntu
 docker_version: 24.0.9
 docker_install_version: 5:{{ docker_version }}-1~ubuntu.20.04~focal
-keyrings_folder: /etc/apt/keyrings
+docker_keyrings_folder: /etc/apt/keyrings
 docker_old_packages:
   - docker.io
   - docker-doc

@@ -1,0 +1,20 @@
+---
+# roles/node_exporter/tasks/preinstall.yml
+# Add user and group for node_exporter
+- name: Create the node_exporter group
+  ansible.builtin.group:
+    name: "{{ node_exporter_system_group }}"
+    state: present
+    system: true
+  become: true
+
+- name: Create the node_exporter user
+  ansible.builtin.user:
+    name: "{{ node_exporter_system_user }}"
+    group: "{{ node_exporter_system_group }}"
+    shell: /usr/sbin/nologin
+    system: true
+    state: present
+    create_home: false
+    home: /
+  become: true

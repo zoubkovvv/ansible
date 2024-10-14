@@ -1,0 +1,18 @@
+---
+# roles/node-exporter/handlers/main.yml
+# handlers file for node-exporter role
+- name: Restart Docker Services
+  community.docker.docker_compose_v2:
+    project_src: /opt/{{ docker_app }}
+    state: restarted
+    when:
+    - not ansible_check_mode
+
+- name: Restart node_exporter
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: node_exporter
+    state: restarted
+    when:
+    - not ansible_check_mode
+

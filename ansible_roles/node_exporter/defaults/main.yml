@@ -1,0 +1,28 @@
+---
+#initial_message: "Welcome to the {{ app }} role!"
+#startup_message: "Performing {{ app }} setup tasks..."
+
+node_exporter_version: 1.8.2
+node_exporter_system_user: node_exporter
+node_exporter_system_group: "{{ node_exporter_system_user }}"
+node_exporter_bin_dir: /usr/local/bin
+node_exporter_tmp_dir: /tmp
+node_exporter_port: 9100
+
+node_exporter_docker_install: false
+
+
+docker_install: true
+docker_compose: "docker-compose.yml"
+docker_app: "{{ app }}"
+docker_directory: "/opt/{{ app }}"
+docker_image: "prom/{{ app }}:v{{ node_exporter_version }}"
+docker_mem_limit: 200m
+docker_log_size: "200k"
+docker_log_file: "10"
+
+node_exporter_binary_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/\
+                    node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+
+#node_exporter_checksums_url: "https://github.com/{{ _node_exporter_repo }}/releases/download/v{{ node_exporter_version }}/sha256sums.txt"
+

@@ -1,0 +1,39 @@
+---
+# roles/initial/vars/main.yml
+initial_ansible_user: "zoubkovvv"
+initial_ansible_public_key: "{{ lookup('file', 'files/id_rsa.pub') }}"
+initial_disable_swap: false
+initial_enable_ssh_tcp_forwarding: true
+initial_journalctl_max_disk_usage: 1G
+initial_sshd_config_file: /etc/ssh/sshd_config
+initial_timezone: Asia/Yekaterinburg
+initial_update_packages: true
+initial_useful_packages:
+  - apt-transport-https
+  - bash-completion
+  - ca-certificates
+  - chrony
+  - curl
+  - git
+  - gnupg
+  - gnupg-agent
+  - htop
+  - jq
+  - lsof
+  - make
+  - mc
+  - net-tools
+  - software-properties-common
+  - sysstat
+  - tree
+  - unzip
+  - vim
+  - wget
+  - zip
+
+initial_useless_packages:
+  - unattended-upgrades
+  - sosreport
+  - apport
+# - cloud-init
+# - snapd

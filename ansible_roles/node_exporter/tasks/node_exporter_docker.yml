@@ -1,13 +1,13 @@
 ---
 # tasks file for node-exporter
-- name: Print startup messages
-  ansible.builtin.debug:
-    msg: "{{ item }}"
-  loop:
-    - "{{ initial_message }}"
-    - "{{ startup_message }}"
-  tags:
-    - "{{ app }}"
+#- name: Print startup messages
+#  ansible.builtin.debug:
+#    msg: "{{ item }}"
+#  loop:
+#    - "{{ initial_message }}"
+#    - "{{ startup_message }}"
+#  tags:
+#    - "{{ app }}"
 
 - name: Create directory with permissions 0777
   ansible.builtin.file:
